@@ -1,78 +1,46 @@
+// Load configuration from environment or config file
 const path = require('path');
 
+// Environment variable overrides
+const config = {
+  disableHotReload: process.env.DISABLE_HOT_RELOAD === 'true',
+};
+
 module.exports = {
-  style: {
-    postcss: {
-      plugins: [
-        require('tailwindcss'),
-        require('autoprefixer'),
-        require('cssnano')({
-          preset: 'default',
-        }),
-      ],
-    },
-  },
   webpack: {
-    configure: (webpackConfig, { env, paths }) => {
-      // Production optimizations
-      if (env === 'production') {
-        // Enable gzip compression
-        webpackConfig.plugins.push(
-          new (require('compression-webpack-plugin'))({
-            algorithm: 'gzip',
-            test: /\.(js|css|html|svg)$/,
-            threshold: 8192,
-            minRatio: 0.8,
-          })
-        );
-
-        // Bundle splitting
-        webpackConfig.optimization.splitChunks = {
-          chunks: 'all',
-          cacheGroups: {
-            default: {
-              minChunks: 2,
-              priority: -20,
-              reuseExistingChunk: true,
-            },
-            vendor: {
-              test: /[\\/]node_modules[\\/]/,
-              name: 'vendors',
-              priority: -10,
-              chunks: 'all',
-            },
-            react: {
-              test: /[\\/]node_modules[\\/](react|react-dom)[\\/]/,
-              name: 'react',
-              priority: 20,
-              chunks: 'all',
-            },
-            ui: {
-              test: /[\\/]node_modules[\\/]@radix-ui[\\/]/,
-              name: 'ui',
-              priority: 15,
-              chunks: 'all',
-            },
-          },
+    alias: {
+      '@': path.resolve(__dirname, 'src'),
+    },
+    configure: (webpackConfig) => {
+      
+      // Disable hot reload completely if environment variable is set
+      if (config.disableHotReload) {
+        // Remove hot reload related plugins
+        webpackConfig.plugins = webpackConfig.plugins.filter(plugin => {
+          return !(plugin.constructor.name === 'HotModuleReplacementPlugin');
+        });
+        
+        // Disable watch mode
+        webpackConfig.watch = false;
+        webpackConfig.watchOptions = {
+          ignored: /.*/, // Ignore all files
         };
-
-        // Minimize bundle size
-        webpackConfig.optimization.usedExports = true;
-        webpackConfig.optimization.sideEffects = false;
+      } else {
+        // Add ignored patterns to reduce watched directories
+        webpackConfig.watchOptions = {
+          ...webpackConfig.watchOptions,
+          ignored: [
+            '**/node_modules/**',
+            '**/.git/**',
+            '**/build/**',
+            '**/dist/**',
+            '**/coverage/**',
+            '**/public/**',
+          ],
+        };
       }
-
-      // Add resolve alias for better tree shaking
-      webpackConfig.resolve.alias = {
-        ...webpackConfig.resolve.alias,
-        'lodash': 'lodash-es',
-      };
-
+      
       return webpackConfig;
     },
-  },
-  devServer: {
-    compress: true,
-    hot: true,
-    open: false,
   },
 };
