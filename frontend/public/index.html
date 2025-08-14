@@ -5,77 +5,13 @@
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
-    <meta name="description" content="Futanari AI - Create fully animated, emotionally intelligent companions with Lovescape's advanced AI technology." />
-    
-    <!-- Performance optimizations -->
-    <link rel="preconnect" href="https://customer-assets.emergentagent.com" crossorigin>
-    <link rel="preconnect" href="https://lovescape.com" crossorigin>
-    <link rel="dns-prefetch" href="//customer-assets.emergentagent.com">
-    <link rel="dns-prefetch" href="//lovescape.com">
-    
-    <!-- Critical CSS will be injected here -->
-    <style>
-      /* Critical CSS for above-the-fold content */
-      body {
-        margin: 0;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-          'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-          sans-serif;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        background-color: #000000;
-        color: #ffffff;
-      }
-      
-      /* Loading animation for better perceived performance */
-      .loading {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        background: linear-gradient(135deg, #1f2937 0%, #000000 50%, #1f2937 100%);
-      }
-      
-      .loader {
-        width: 40px;
-        height: 40px;
-        border: 4px solid #e6004c;
-        border-top: 4px solid transparent;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-      }
-      
-      @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-      }
-      
-      /* Hide loading once React loads */
-      .loaded .loading {
-        display: none;
-      }
-    </style>
-    
+    <meta name="description" content="Web site created using create-react-app" />
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    
-    <title>Futanari AI - Create Your Perfect AI Companion | Lovescape</title>
+    <title>React App</title>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
-    
-    <!-- Loading screen for better perceived performance -->
-    <div class="loading" id="loading-screen">
-      <div class="loader"></div>
-    </div>
-    
     <div id="root"></div>
-    
-    <!-- Remove loading screen once React is ready -->
-    <script>
-      window.addEventListener('load', function() {
-        document.body.classList.add('loaded');
-      });
-    </script>
   </body>
 </html>
