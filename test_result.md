@@ -249,9 +249,9 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Complete Landing Page Functionality"
+    - "Social Media Meta Tags"
+    - "Complete Landing Page Functionality" 
     - "External Link Verification"
-    - "Cross-browser Compatibility"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
@@ -261,3 +261,5 @@ agent_communication:
       message: "Frontend implementation complete with all specified sections. Landing page is functional with video backgrounds, image gallery, CTA buttons, and external links. Backend is minimal by design as this is a marketing landing page that redirects to external services. Ready for comprehensive testing to verify all functionality works correctly across different browsers and devices."
     - agent: "testing"
       message: "Backend testing completed successfully. Created comprehensive test suite (/app/backend_test.py) and verified all core functionality: FastAPI server running correctly, CORS properly configured, API endpoints (/api/) working with proper routing, MongoDB connection established with data persistence, and status check endpoints fully functional. All 5 backend tests passed. Backend infrastructure is solid and ready for production use."
+    - agent: "main"
+      message: "Adding social media meta tags task. Need to implement Open Graph and Twitter Card tags with title 'Futanari AI Character Chat — NSFW Roleplay Chatbot', description 'Immersive futanari roleplay with an AI chatbot. Create characters, enjoy realistic dialogue, instant start, full privacy.' and use gallery image for social preview. This will ensure proper link previews when shared on social networks."
