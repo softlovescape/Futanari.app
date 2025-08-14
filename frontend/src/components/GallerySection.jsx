@@ -95,10 +95,11 @@ const GallerySection = ({ images }) => {
             >
               {images.map((image, index) => (
                 <div key={index} className="w-full flex-shrink-0">
-                  <img
+                  <OptimizedImage
                     src={image}
                     alt={`Gallery image ${index + 1}`}
                     className="w-full h-96 md:h-[500px] object-cover"
+                    loading={index === currentIndex ? "eager" : "lazy"}
                   />
                 </div>
               ))}
