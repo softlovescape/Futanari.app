@@ -1,105 +1,61 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from './ui/button';
-
-// Optimized image component with lazy loading
-const OptimizedImage = React.memo(({ src, alt, className, loading = "lazy" }) => {
-  const [loaded, setLoaded] = useState(false);
-  const [error, setError] = useState(false);
-
-  return (
-    <div className={`relative ${className}`}>
-      {!loaded && !error && (
-        <div className="absolute inset-0 bg-gray-800 animate-pulse rounded-lg" />
-      )}
-      <img
-        src={src}
-        alt={alt}
-        className={`${className} transition-opacity duration-300 ${loaded ? 'opacity-100' : 'opacity-0'}`}
-        loading={loading}
-        onLoad={() => setLoaded(true)}
-        onError={() => setError(true)}
-        decoding="async"
-      />
-      {error && (
-        <div className="absolute inset-0 bg-gray-800 rounded-lg flex items-center justify-center">
-          <span className="text-gray-400 text-sm">Failed to load</span>
-        </div>
-      )}
-    </div>
-  );
-});
 
 const GallerySection = ({ images }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
-  // Auto-rotation effect
   useEffect(() => {
     if (!isAutoPlaying) return;
 
     const interval = setInterval(() => {
       setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
-    }, 2000); // 2 seconds
+    }, 2000);
 
     return () => clearInterval(interval);
   }, [images.length, isAutoPlaying]);
 
-  // Preload adjacent images for better UX
-  const preloadImages = useMemo(() => {
-    const prevIndex = currentIndex === 0 ? images.length - 1 : currentIndex - 1;
-    const nextIndex = (currentIndex + 1) % images.length;
-    return [prevIndex, nextIndex];
-  }, [currentIndex, images.length]);
-
-  useEffect(() => {
-    preloadImages.forEach(index => {
-      const img = new Image();
-      img.src = images[index];
-    });
-  }, [preloadImages, images]);
-
-  const nextSlide = useCallback(() => {
+  const nextSlide = () => {
     setIsAutoPlaying(false); // Pause auto-play when user interacts
     setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
     // Resume auto-play after 5 seconds
     setTimeout(() => setIsAutoPlaying(true), 5000);
-  }, [images.length]);
+  };
 
-  const prevSlide = useCallback(() => {
+  const prevSlide = () => {
     setIsAutoPlaying(false); // Pause auto-play when user interacts
     setCurrentIndex((prevIndex) => (prevIndex - 1 + images.length) % images.length);
     // Resume auto-play after 5 seconds
     setTimeout(() => setIsAutoPlaying(true), 5000);
-  }, [images.length]);
+  };
 
-  const goToSlide = useCallback((index) => {
+  const goToSlide = (index) => {
     setIsAutoPlaying(false); // Pause auto-play when user interacts
     setCurrentIndex(index);
     // Resume auto-play after 5 seconds
     setTimeout(() => setIsAutoPlaying(true), 5000);
-  }, []);
+  };
 
   return (
     <section className="relative z-10 py-20 bg-black bg-opacity-90">
       <div className="container mx-auto px-4">
-        <h2 className="text-4xl md:text-5xl font-bold text-white text-center mb-12">
+        <h2 className="text-4xl md:text-6xl font-bold text-white text-center mb-16">
           Gallery to enjoy
         </h2>
         
         <div className="relative max-w-4xl mx-auto">
-          <div className="overflow-hidden rounded-lg">
-            <div 
+          <div className="relative overflow-hidden rounded-lg shadow-2xl">
+            <div
               className="flex transition-transform duration-500 ease-in-out"
               style={{ transform: `translateX(-${currentIndex * 100}%)` }}
             >
               {images.map((image, index) => (
                 <div key={index} className="w-full flex-shrink-0">
-                  <OptimizedImage
+                  <img
                     src={image}
                     alt={`Gallery image ${index + 1}`}
                     className="w-full h-96 md:h-[500px] object-cover"
-                    loading={index === currentIndex ? "eager" : "lazy"}
                   />
                 </div>
               ))}
@@ -108,17 +64,19 @@ const GallerySection = ({ images }) => {
 
           {/* Navigation Buttons */}
           <Button
+            variant="outline"
+            size="icon"
+            className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 border-white text-white hover:bg-opacity-70"
             onClick={prevSlide}
-            className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white border-none p-2"
-            size="sm"
           >
             <ChevronLeft className="w-6 h-6" />
           </Button>
-          
+
           <Button
+            variant="outline"
+            size="icon"
+            className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 border-white text-white hover:bg-opacity-70"
             onClick={nextSlide}
-            className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white border-none p-2"
-            size="sm"
           >
             <ChevronRight className="w-6 h-6" />
           </Button>
@@ -129,8 +87,10 @@ const GallerySection = ({ images }) => {
               <button
                 key={index}
                 onClick={() => goToSlide(index)}
-                className={`w-3 h-3 rounded-full transition-colors duration-200 ${
-                  index === currentIndex ? 'bg-[#e6004c]' : 'bg-gray-500'
+                className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                  index === currentIndex
+                    ? 'bg-[#e6004c] scale-125'
+                    : 'bg-white bg-opacity-50 hover:bg-opacity-75'
                 }`}
               />
             ))}
