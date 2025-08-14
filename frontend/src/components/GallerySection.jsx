@@ -45,6 +45,20 @@ const GallerySection = ({ images }) => {
     return () => clearInterval(interval);
   }, [images.length, isAutoPlaying]);
 
+  // Preload adjacent images for better UX
+  const preloadImages = useMemo(() => {
+    const prevIndex = currentIndex === 0 ? images.length - 1 : currentIndex - 1;
+    const nextIndex = (currentIndex + 1) % images.length;
+    return [prevIndex, nextIndex];
+  }, [currentIndex, images.length]);
+
+  useEffect(() => {
+    preloadImages.forEach(index => {
+      const img = new Image();
+      img.src = images[index];
+    });
+  }, [preloadImages, images]);
+
   const nextSlide = useCallback(() => {
     setIsAutoPlaying(false); // Pause auto-play when user interacts
     setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
