@@ -229,6 +229,18 @@ frontend:
         agent: "main"
         comment: "Black background (#000), white text (#fff), red accent (#e6004c), Inter font, smooth animations"
 
+  - task: "Social Media Meta Tags"
+    implemented: false
+    working: "NA"
+    file: "/app/frontend/public/index.html"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Need to add Open Graph and Twitter Card meta tags for proper social sharing preview"
+
 metadata:
   created_by: "main_agent"
   version: "1.0"
