@@ -1,6 +1,34 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from './ui/button';
+
+// Optimized image component with lazy loading
+const OptimizedImage = React.memo(({ src, alt, className, loading = "lazy" }) => {
+  const [loaded, setLoaded] = useState(false);
+  const [error, setError] = useState(false);
+
+  return (
+    <div className={`relative ${className}`}>
+      {!loaded && !error && (
+        <div className="absolute inset-0 bg-gray-800 animate-pulse rounded-lg" />
+      )}
+      <img
+        src={src}
+        alt={alt}
+        className={`${className} transition-opacity duration-300 ${loaded ? 'opacity-100' : 'opacity-0'}`}
+        loading={loading}
+        onLoad={() => setLoaded(true)}
+        onError={() => setError(true)}
+        decoding="async"
+      />
+      {error && (
+        <div className="absolute inset-0 bg-gray-800 rounded-lg flex items-center justify-center">
+          <span className="text-gray-400 text-sm">Failed to load</span>
+        </div>
+      )}
+    </div>
+  );
+});
 
 const GallerySection = ({ images }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
