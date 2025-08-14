@@ -45,26 +45,26 @@ const GallerySection = ({ images }) => {
     return () => clearInterval(interval);
   }, [images.length, isAutoPlaying]);
 
-  const nextSlide = () => {
+  const nextSlide = useCallback(() => {
     setIsAutoPlaying(false); // Pause auto-play when user interacts
     setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
     // Resume auto-play after 5 seconds
     setTimeout(() => setIsAutoPlaying(true), 5000);
-  };
+  }, [images.length]);
 
-  const prevSlide = () => {
+  const prevSlide = useCallback(() => {
     setIsAutoPlaying(false); // Pause auto-play when user interacts
     setCurrentIndex((prevIndex) => (prevIndex - 1 + images.length) % images.length);
     // Resume auto-play after 5 seconds
     setTimeout(() => setIsAutoPlaying(true), 5000);
-  };
+  }, [images.length]);
 
-  const goToSlide = (index) => {
+  const goToSlide = useCallback((index) => {
     setIsAutoPlaying(false); // Pause auto-play when user interacts
     setCurrentIndex(index);
     // Resume auto-play after 5 seconds
     setTimeout(() => setIsAutoPlaying(true), 5000);
-  };
+  }, []);
 
   return (
     <section className="relative z-10 py-20 bg-black bg-opacity-90">
