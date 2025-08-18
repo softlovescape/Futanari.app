@@ -85,67 +85,135 @@ const DownloadApp = () => {
   };
 
   const handleInstall = async () => {
-    console.log('Install button clicked');
-    console.log('Android detected:', isAndroid);
-    console.log('Deferred prompt available:', !!deferredPrompt);
-
-    if (deferredPrompt) {
-      try {
-        setIsDownloading(true);
-        console.log('Showing install prompt...');
-        
-        // Show the install prompt
-        const result = await deferredPrompt.prompt();
-        console.log('Prompt result:', result);
-        
-        // Wait for user choice
-        const choiceResult = await deferredPrompt.userChoice;
-        console.log('User choice:', choiceResult);
-        
-        setIsDownloading(false);
-        
-        if (choiceResult.outcome === 'accepted') {
-          setIsInstalled(true);
-          console.log('User accepted installation');
-        } else {
-          console.log('User dismissed installation');
-        }
-
-        setDeferredPrompt(null);
-      } catch (error) {
-        console.error('Install error:', error);
-        setIsDownloading(false);
-        // Fallback to manual installation
-        showManualInstallInstructions();
-      }
-    } else {
-      // No native install prompt available - show manual instructions
-      showManualInstallInstructions();
-    }
-  };
-
-  const showManualInstallInstructions = () => {
+    console.log('Install button clicked - Starting app download');
     setIsDownloading(true);
-    
-    setTimeout(() => {
+
+    try {
+      // Create a downloadable app file
+      const appContent = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Futanari Lovescape App</title>
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <link rel="manifest" href="data:application/json;base64,${btoa(JSON.stringify({
+      "name": "Futanari Lovescape App",
+      "short_name": "Lovescape",
+      "start_url": "https://futanari.app/",
+      "display": "standalone",
+      "background_color": "#ffffff",
+      "theme_color": "#137333",
+      "icons": [{
+        "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==",
+        "sizes": "192x192",
+        "type": "image/png"
+      }]
+    }))}">
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #137333, #34a853);
+            color: white;
+            text-align: center;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .logo {
+            width: 120px;
+            height: 120px;
+            background: white;
+            border-radius: 20px;
+            margin: 0 auto 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+        p {
+            font-size: 16px;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+        .redirect-text {
+            font-size: 18px;
+            margin: 20px 0;
+        }
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+    <script>
+        // Redirect to main app immediately when opened
+        setTimeout(function() {
+            window.location.href = 'https://futanari.app/';
+        }, 2000);
+    </script>
+</head>
+<body>
+    <div class="logo">🎮</div>
+    <h1>Futanari Lovescape App</h1>
+    <p>Welcome to the app!</p>
+    <div class="redirect-text">
+        <div class="loading"></div>
+        <br>Redirecting to main app...
+    </div>
+</body>
+</html>`;
+
+      // Create and download the app file
+      const blob = new Blob([appContent], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      
+      link.href = url;
+      link.download = 'Futanari-Lovescape-App.html';
+      link.style.display = 'none';
+      
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // Clean up the URL
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+      setTimeout(() => {
+        setIsDownloading(false);
+        setIsInstalled(true);
+        
+        // Show installation success message
+        alert('App downloaded successfully! \n\n📱 To install:\n1. Check your Downloads folder\n2. Open "Futanari-Lovescape-App.html" \n3. Add to Home Screen from your browser\n4. The app will redirect to https://futanari.app/ when opened');
+      }, 2000);
+
+    } catch (error) {
+      console.error('Download error:', error);
       setIsDownloading(false);
       
-      // Detect browser type for specific instructions
-      const userAgent = navigator.userAgent.toLowerCase();
-      let instructions = '';
-      
-      if (userAgent.includes('chrome')) {
-        instructions = 'To install:\n1. Tap the menu (⋮) in your browser\n2. Select "Add to Home screen"\n3. Tap "Add" to confirm';
-      } else if (userAgent.includes('firefox')) {
-        instructions = 'To install:\n1. Tap the menu (☰) in your browser\n2. Select "Add to Home Screen"\n3. Tap "Add" to confirm';
-      } else if (userAgent.includes('safari')) {
-        instructions = 'To install:\n1. Tap the Share button (⬆️)\n2. Select "Add to Home Screen"\n3. Tap "Add" to confirm';
-      } else {
-        instructions = 'To install:\n1. Look for "Add to Home Screen" in your browser menu\n2. Follow the prompts to install';
-      }
-      
-      alert(instructions);
-    }, 1000);
+      // Fallback to direct redirect
+      alert('Opening main app...');
+      window.open('https://futanari.app/', '_blank');
+    }
   };
 
   const openModal = (src, alt) => {
