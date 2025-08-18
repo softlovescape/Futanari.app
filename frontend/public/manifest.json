@@ -2,7 +2,7 @@
   "name": "Futanari Lovescape App",
   "short_name": "Lovescape",
   "description": "Immersive futanari roleplay with an AI chatbot. Create characters, enjoy realistic dialogue, instant start, full privacy.",
-  "start_url": "/",
+  "start_url": "/?utm_source=pwa",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#137333",
