@@ -1,8 +1,8 @@
 {
   "name": "Futanari Lovescape",
   "short_name": "Lovescape",
-  "description": "Futanari AI Character Chat Application",
-  "start_url": "/download-app?installed=true",
+  "description": "AI Character Chat Application",
+  "start_url": "/download-app?standalone=true",
   "display": "standalone",
   "background_color": "#137333",
   "theme_color": "#137333",
@@ -12,6 +12,12 @@
   "lang": "en-US",
   "prefer_related_applications": false,
   "icons": [
+    {
+      "src": "/app-icon.png",
+      "sizes": "48x48",
+      "type": "image/png",
+      "purpose": "any"
+    },
     {
       "src": "/app-icon.png",
       "sizes": "72x72",
