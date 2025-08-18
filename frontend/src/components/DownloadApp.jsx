@@ -126,79 +126,219 @@ const DownloadApp = () => {
   };
 
   const handleInstall = async () => {
-    console.log('Starting silent app installation...');
+    console.log('Install button clicked');
     setIsDownloading(true);
 
     try {
+      // First check if there's a deferred install prompt
       if (deferredPrompt) {
-        console.log('Installing app silently...');
+        console.log('Using deferred PWA install prompt');
         
-        // Trigger installation without user prompts
+        // Show the install prompt
         const result = await deferredPrompt.prompt();
-        const choiceResult = await deferredPrompt.userChoice;
+        console.log('Prompt shown, result:', result);
         
-        console.log('Installation result:', choiceResult.outcome);
+        // Wait for the user's choice
+        const choiceResult = await deferredPrompt.userChoice;
+        console.log('User choice:', choiceResult.outcome);
         
         if (choiceResult.outcome === 'accepted') {
+          console.log('PWA installation accepted');
           setIsInstalled(true);
-          setIsDownloading(false);
-          console.log('App installed successfully to home screen');
-          setDeferredPrompt(null);
-        } else {
-          // If user declined, try alternative installation
-          setIsDownloading(false);
-          triggerBrowserInstall();
         }
-      } else {
-        // No PWA prompt available - trigger browser's add to home screen
-        triggerBrowserInstall();
+        
+        setDeferredPrompt(null);
+        setIsDownloading(false);
+        return;
       }
-    } catch (error) {
-      console.error('Installation failed:', error);
-      setIsDownloading(false);
-      triggerBrowserInstall();
-    }
-  };
 
-  const triggerBrowserInstall = () => {
-    console.log('Triggering browser installation...');
-    
-    // Try to force browser's add to home screen functionality
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js').then(() => {
-        console.log('Service worker ready for installation');
-        
-        // Mark as ready for installation
-        setIsDownloading(false);
-        setIsInstalled(true);
-        
-        // Try to trigger native install prompt through various methods
-        const userAgent = navigator.userAgent.toLowerCase();
-        
-        // Create install event
-        const installEvent = new CustomEvent('beforeinstallprompt', {
-          detail: { platforms: ['web'] }
-        });
-        
-        // Dispatch install event
-        window.dispatchEvent(installEvent);
-        
-        // For Android Chrome, try to trigger install banner
-        if (userAgent.includes('android') && userAgent.includes('chrome')) {
-          // Try to show install banner automatically
-          setTimeout(() => {
-            document.dispatchEvent(new Event('beforeinstallprompt'));
-          }, 500);
+      // If no deferred prompt, force browser's add to home screen
+      console.log('No PWA prompt available, triggering manual installation');
+      
+      // Register service worker first to meet PWA requirements
+      if ('serviceWorker' in navigator) {
+        try {
+          const registration = await navigator.serviceWorker.register('/sw.js');
+          console.log('Service worker registered:', registration.scope);
+          
+          // Wait a moment for service worker to activate
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          
+          // Try to manually trigger install prompt
+          const beforeInstallPromptEvent = new Event('beforeinstallprompt');
+          window.dispatchEvent(beforeInstallPromptEvent);
+          
+        } catch (swError) {
+          console.error('Service worker registration failed:', swError);
         }
-        
-        console.log('Installation triggered - app should be installable');
-      }).catch((error) => {
-        console.error('Service worker registration failed:', error);
-        setIsDownloading(false);
-      });
-    } else {
+      }
+
+      // Fallback: Detect platform and show appropriate action
+      const userAgent = navigator.userAgent.toLowerCase();
+      const isIOS = /ipad|iphone|ipod/.test(userAgent);
+      const isAndroid = userAgent.includes('android');
+      const isChrome = userAgent.includes('chrome');
+      const isSafari = userAgent.includes('safari') && !userAgent.includes('chrome');
+
       setIsDownloading(false);
-      console.log('Service worker not supported');
+
+      if (isIOS) {
+        // For iOS - direct to add to home screen
+        console.log('iOS detected - showing add to home screen instructions');
+        // Create visual cue for iOS add to home screen
+        document.body.style.overflow = 'hidden';
+        const iosModal = document.createElement('div');
+        iosModal.innerHTML = `
+          <div style="
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+          ">
+            <div style="
+              background: white;
+              color: black;
+              padding: 30px;
+              border-radius: 15px;
+              max-width: 300px;
+              width: 90%;
+            ">
+              <h3 style="margin: 0 0 20px 0;">Install App</h3>
+              <p style="margin: 0 0 20px 0; font-size: 14px;">
+                1. Tap the Share button (⬆️) at the bottom<br>
+                2. Select "Add to Home Screen"<br>
+                3. Tap "Add" to install
+              </p>
+              <button onclick="this.parentElement.parentElement.parentElement.remove(); document.body.style.overflow='';" style="
+                background: #137333;
+                color: white;
+                border: none;
+                padding: 10px 20px;
+                border-radius: 8px;
+                font-size: 16px;
+              ">Got it</button>
+            </div>
+          </div>
+        `;
+        document.body.appendChild(iosModal);
+        
+      } else if (isAndroid && isChrome) {
+        // For Android Chrome - try to trigger native install
+        console.log('Android Chrome detected');
+        
+        // Try to show install banner or guide user
+        setTimeout(() => {
+          // Check if browser shows install banner
+          const installBanner = document.querySelector('[data-pwa-install]');
+          if (!installBanner) {
+            // Show manual instructions for Android
+            const androidModal = document.createElement('div');
+            androidModal.innerHTML = `
+              <div style="
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.8);
+                z-index: 10000;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                font-family: Arial, sans-serif;
+                text-align: center;
+                padding: 20px;
+              ">
+                <div style="
+                  background: white;
+                  color: black;
+                  padding: 30px;
+                  border-radius: 15px;
+                  max-width: 300px;
+                  width: 90%;
+                ">
+                  <h3 style="margin: 0 0 20px 0;">Install App</h3>
+                  <p style="margin: 0 0 20px 0; font-size: 14px;">
+                    1. Tap the menu (⋮) in your browser<br>
+                    2. Look for "Add to Home screen" or "Install app"<br>
+                    3. Tap it to install the app
+                  </p>
+                  <button onclick="this.parentElement.parentElement.parentElement.remove(); document.body.style.overflow='';" style="
+                    background: #137333;
+                    color: white;
+                    border: none;
+                    padding: 10px 20px;
+                    border-radius: 8px;
+                    font-size: 16px;
+                  ">Got it</button>
+                </div>
+              </div>
+            `;
+            document.body.appendChild(androidModal);
+          }
+        }, 500);
+        
+      } else {
+        // For other browsers
+        console.log('Other browser detected');
+        const genericModal = document.createElement('div');
+        genericModal.innerHTML = `
+          <div style="
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+          ">
+            <div style="
+              background: white;
+              color: black;
+              padding: 30px;
+              border-radius: 15px;
+              max-width: 300px;
+              width: 90%;
+            ">
+              <h3 style="margin: 0 0 20px 0;">Install App</h3>
+              <p style="margin: 0 0 20px 0; font-size: 14px;">
+                Look for "Add to Home Screen" or "Install" option in your browser menu to install this app.
+              </p>
+              <button onclick="this.parentElement.parentElement.parentElement.remove(); document.body.style.overflow='';" style="
+                background: #137333;
+                color: white;
+                border: none;
+                padding: 10px 20px;
+                border-radius: 8px;
+                font-size: 16px;
+              ">Got it</button>
+            </div>
+          </div>
+        `;
+        document.body.appendChild(genericModal);
+      }
+
+    } catch (error) {
+      console.error('Installation error:', error);
+      setIsDownloading(false);
     }
   };
 
