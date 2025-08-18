@@ -42,7 +42,7 @@ const DownloadApp = () => {
   }, []);
 
   const handleAppIconClick = () => {
-    // Create a link to the app icon (we'll need to add this to public folder)
+    // Create a link to the app icon
     const link = document.createElement('a');
     link.href = '/app-icon.png';
     link.download = 'futanari-app-icon.png';
