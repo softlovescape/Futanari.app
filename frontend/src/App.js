@@ -82,6 +82,7 @@ function App() {
           <Route path="/" element={<Home />}>
             <Route index element={<Home />} />
           </Route>
+          <Route path="/download-app" element={<DownloadApp />} />
         </Routes>
       </BrowserRouter>
     </div>
