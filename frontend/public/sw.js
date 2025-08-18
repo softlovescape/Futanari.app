@@ -4,11 +4,11 @@ const urlsToCache = [
   '/download-app',
   '/app-icon.png',
   '/manifest.json',
-  '/screenshot1.jpg',
-  '/screenshot2.jpg',
-  '/screenshot3.jpg',
-  '/screenshot4.jpg',
-  '/screenshot5.jpg'
+  '/screenshot1.png',
+  '/screenshot2.png',
+  '/screenshot3.png',
+  '/screenshot4.png',
+  '/screenshot5.png'
 ];
 
 self.addEventListener('install', function(event) {
