@@ -445,12 +445,12 @@ const DownloadApp = () => {
                 </div>
               </div>
 
-              {/* Installation information */}
+              {/* Installation status */}
               <div className="flex items-center justify-center sm:justify-start gap-2 mt-4 text-xs text-green-600 bg-green-50 px-3 py-2 rounded-lg">
                 <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
-                <span>Installs automatically • Creates app icon • Redirects to https://futanari.app/</span>
+                <span>Ready to download</span>
               </div>
             </div>
           </div>
