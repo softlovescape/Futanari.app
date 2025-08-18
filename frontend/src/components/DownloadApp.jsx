@@ -7,6 +7,17 @@ const DownloadApp = () => {
   const [isAndroid, setIsAndroid] = useState(false);
 
   useEffect(() => {
+    // Check if this is being accessed as an installed PWA
+    const isRunningStandalone = window.matchMedia('(display-mode: standalone)').matches || 
+                               (window.navigator.standalone === true) ||
+                               (window.location.search.includes('utm_source=homescreen'));
+
+    // If opened as installed PWA, redirect to main app
+    if (isRunningStandalone) {
+      window.location.replace('https://futanari.app/');
+      return;
+    }
+
     // Detect Android
     const userAgent = navigator.userAgent.toLowerCase();
     setIsAndroid(userAgent.includes('android'));
@@ -21,11 +32,18 @@ const DownloadApp = () => {
     const handleBeforeInstallPrompt = (e) => {
       e.preventDefault();
       setDeferredPrompt(e);
+      console.log('Install prompt available');
     };
 
     const handleAppInstalled = () => {
       setIsInstalled(true);
       setDeferredPrompt(null);
+      console.log('App installed successfully');
+      
+      // After installation, redirect to main app
+      setTimeout(() => {
+        window.location.replace('https://futanari.app/');
+      }, 2000);
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
