@@ -7,71 +7,79 @@ const DownloadApp = () => {
   const [isAndroid, setIsAndroid] = useState(false);
 
   useEffect(() => {
-    // Detect platform
+    // Check if opened as installed app (standalone mode)
+    const isStandaloneApp = window.matchMedia('(display-mode: standalone)').matches || 
+                           window.navigator.standalone === true ||
+                           window.location.search.includes('installed=true');
+    
+    if (isStandaloneApp) {
+      console.log('App opened as standalone - redirecting immediately to https://futanari.app/');
+      
+      // Show brief loading screen then redirect
+      document.body.innerHTML = `
+        <div style="
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(135deg, #137333, #34a853);
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          color: white;
+          font-family: Arial, sans-serif;
+          z-index: 9999;
+        ">
+          <img src="/app-icon.png" style="
+            width: 100px;
+            height: 100px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+          " alt="App Icon" />
+          <h1 style="
+            font-size: 24px;
+            margin: 0 0 20px 0;
+            text-align: center;
+          ">Futanari Lovescape</h1>
+          <div style="
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+          "></div>
+          <p style="
+            margin: 0;
+            font-size: 16px;
+            text-align: center;
+          ">Opening app...</p>
+        </div>
+        <style>
+          @keyframes spin {
+            to { transform: rotate(360deg); }
+          }
+        </style>
+      `;
+      
+      // Immediate redirect to main app
+      setTimeout(() => {
+        window.location.replace('https://futanari.app/');
+      }, 1500);
+      
+      return; // Stop further execution
+    }
+
+    // Regular page initialization
     const userAgent = navigator.userAgent.toLowerCase();
     const isAndroidDevice = userAgent.includes('android');
     
     setIsAndroid(isAndroidDevice);
     console.log('Platform detected - Android:', isAndroidDevice);
-
-    // Check if app is opened as installed PWA and redirect
-    const isPWA = window.matchMedia('(display-mode: standalone)').matches || 
-                 window.navigator.standalone === true ||
-                 document.referrer.includes('android-app://') ||
-                 window.location.search.includes('utm_source=pwa');
-    
-    if (isPWA) {
-      console.log('App opened as PWA - redirecting to https://futanari.app/');
-      // Show loading message and redirect
-      document.body.innerHTML = `
-        <div style="
-          display: flex; 
-          flex-direction: column; 
-          justify-content: center; 
-          align-items: center; 
-          min-height: 100vh; 
-          background: linear-gradient(135deg, #137333, #34a853); 
-          color: white; 
-          font-family: Arial, sans-serif; 
-          text-align: center;
-          padding: 20px;
-        ">
-          <div style="
-            width: 80px; 
-            height: 80px; 
-            background: white; 
-            border-radius: 15px; 
-            margin-bottom: 20px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            font-size: 32px;
-          ">🎮</div>
-          <h1 style="margin-bottom: 15px;">Futanari Lovescape App</h1>
-          <div style="
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,.3);
-            border-radius: 50%;
-            border-top-color: #fff;
-            animation: spin 1s ease-in-out infinite;
-            margin-bottom: 15px;
-          "></div>
-          <p>Redirecting to main app...</p>
-          <style>
-            @keyframes spin {
-              to { transform: rotate(360deg); }
-            }
-          </style>
-        </div>
-      `;
-      
-      setTimeout(() => {
-        window.location.replace('https://futanari.app/');
-      }, 2000);
-      return;
-    }
 
     // Listen for PWA install prompt
     const handleBeforeInstallPrompt = (e) => {
