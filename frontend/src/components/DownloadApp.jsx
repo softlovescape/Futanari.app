@@ -368,6 +368,71 @@ const DownloadApp = () => {
             </div>
           </div>
 
+          {/* Ratings and Reviews Section */}
+          <div className="mb-6 sm:mb-8">
+            <h2 className="text-base sm:text-lg font-medium text-gray-900 mb-4">Ratings and reviews</h2>
+            
+            {/* Rating Overview */}
+            <div className="flex items-start gap-8 mb-8">
+              <div className="flex flex-col items-center">
+                <div className="text-5xl font-light text-gray-900 mb-2">4.9</div>
+                <div className="flex text-yellow-400 mb-2">
+                  {[...Array(5)].map((_, i) => (
+                    <svg key={i} className="w-4 h-4 fill-current" viewBox="0 0 20 20">
+                      <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                    </svg>
+                  ))}
+                </div>
+                <div className="text-sm text-gray-600">8.36M reviews</div>
+              </div>
+
+              <div className="flex-1 max-w-md">
+                {[5, 4, 3, 2, 1].map((stars) => (
+                  <div key={stars} className="flex items-center mb-2">
+                    <span className="text-sm text-gray-700 w-2">{stars}</span>
+                    <div className="flex-1 mx-4 bg-gray-200 rounded-full h-2">
+                      <div 
+                        className="bg-green-600 h-2 rounded-full" 
+                        style={{ width: stars === 5 ? '85%' : stars === 4 ? '10%' : '5%' }}
+                      ></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Individual Reviews */}
+            <div className="space-y-4">
+              {reviews.map((review) => (
+                <div key={review.id} className="border-b border-gray-200 pb-4">
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 bg-purple-500 rounded-full flex items-center justify-center text-white font-medium">
+                      {review.avatar}
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h4 className="font-medium text-gray-900">{review.author}</h4>
+                        <span className="text-sm text-gray-500">{review.date}</span>
+                      </div>
+                      <div className="flex text-yellow-400 mb-2">
+                        {[...Array(review.rating)].map((_, i) => (
+                          <svg key={i} className="w-4 h-4 fill-current" viewBox="0 0 20 20">
+                            <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                          </svg>
+                        ))}
+                      </div>
+                      <p className="text-sm text-gray-700 mb-3">{review.text}</p>
+                      <div className="flex items-center gap-4 text-sm">
+                        <button className="text-green-600 hover:underline">Helpful</button>
+                        <button className="text-green-600 hover:underline">Flag as inappropriate</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
           {/* Footer */}
           <footer className="border-t border-gray-200 pt-6 sm:pt-8 text-center">
             <div className="text-xs text-gray-500 mb-4">
