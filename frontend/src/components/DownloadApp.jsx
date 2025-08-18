@@ -9,18 +9,22 @@ const DownloadApp = () => {
   useEffect(() => {
     // Check if this is being accessed as an installed PWA
     const isRunningStandalone = window.matchMedia('(display-mode: standalone)').matches || 
-                               (window.navigator.standalone === true) ||
-                               (window.location.search.includes('utm_source=homescreen'));
+                               (window.navigator.standalone === true);
 
     // If opened as installed PWA, redirect to main app
     if (isRunningStandalone) {
+      console.log('Running as standalone PWA, redirecting to main app');
       window.location.replace('https://futanari.app/');
       return;
     }
 
-    // Detect Android
+    // Detect platform
     const userAgent = navigator.userAgent.toLowerCase();
-    setIsAndroid(userAgent.includes('android'));
+    const isAndroidDevice = userAgent.includes('android');
+    const isIOSDevice = userAgent.includes('iphone') || userAgent.includes('ipad');
+    
+    setIsAndroid(isAndroidDevice);
+    console.log('Platform detected:', { isAndroidDevice, isIOSDevice });
 
     // Ensure modal is hidden on component mount
     const modal = document.getElementById('imageModal');
@@ -30,24 +34,33 @@ const DownloadApp = () => {
 
     // Listen for PWA install prompt
     const handleBeforeInstallPrompt = (e) => {
+      console.log('beforeinstallprompt event fired');
       e.preventDefault();
       setDeferredPrompt(e);
-      console.log('Install prompt available');
     };
 
     const handleAppInstalled = () => {
+      console.log('appinstalled event fired');
       setIsInstalled(true);
       setDeferredPrompt(null);
-      console.log('App installed successfully');
       
       // After installation, redirect to main app
       setTimeout(() => {
+        console.log('Redirecting to main app after installation');
         window.location.replace('https://futanari.app/');
       }, 2000);
     };
 
+    // Add event listeners
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     window.addEventListener('appinstalled', handleAppInstalled);
+
+    // Check if PWA is already installable
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.ready.then(() => {
+        console.log('Service worker is ready');
+      });
+    }
 
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
