@@ -458,7 +458,7 @@ const DownloadApp = () => {
       </div>
 
       {/* Image Modal */}
-      <div id="imageModal" className="modal-backdrop hidden" onClick={closeModal}>
+      <div id="imageModal" className="modal-backdrop hidden" onClick={closeModal} style={{display: 'none'}}>
         <div className="modal-content">
           <button className="modal-close" onClick={closeModal}>
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
