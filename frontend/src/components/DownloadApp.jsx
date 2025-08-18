@@ -97,6 +97,7 @@ const DownloadApp = () => {
     modalImage.src = src;
     modalImage.alt = alt;
     modal.classList.remove('hidden');
+    modal.style.display = 'flex';
     document.body.style.overflow = 'hidden';
   };
 
