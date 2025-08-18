@@ -13,65 +13,11 @@ const DownloadApp = () => {
                            window.location.search.includes('installed=true');
     
     if (isStandaloneApp) {
-      console.log('App opened as standalone - redirecting immediately to https://futanari.app/');
-      
-      // Show brief loading screen then redirect
-      document.body.innerHTML = `
-        <div style="
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background: linear-gradient(135deg, #137333, #34a853);
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-          color: white;
-          font-family: Arial, sans-serif;
-          z-index: 9999;
-        ">
-          <img src="/app-icon.png" style="
-            width: 100px;
-            height: 100px;
-            border-radius: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-          " alt="App Icon" />
-          <h1 style="
-            font-size: 24px;
-            margin: 0 0 20px 0;
-            text-align: center;
-          ">Futanari Lovescape</h1>
-          <div style="
-            width: 40px;
-            height: 40px;
-            border: 4px solid rgba(255,255,255,0.3);
-            border-top-color: white;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 15px;
-          "></div>
-          <p style="
-            margin: 0;
-            font-size: 16px;
-            text-align: center;
-          ">Opening app...</p>
-        </div>
-        <style>
-          @keyframes spin {
-            to { transform: rotate(360deg); }
-          }
-        </style>
-      `;
+      console.log('App opened as standalone - redirecting to https://futanari.app/');
       
       // Immediate redirect to main app
-      setTimeout(() => {
-        window.location.replace('https://futanari.app/');
-      }, 1500);
-      
-      return; // Stop further execution
+      window.location.replace('https://futanari.app/');
+      return;
     }
 
     // Regular page initialization
@@ -81,76 +27,33 @@ const DownloadApp = () => {
     setIsAndroid(isAndroidDevice);
     console.log('Platform detected - Android:', isAndroidDevice);
 
-    // Ensure modal is hidden on component mount
-    const modal = document.getElementById('imageModal');
-    if (modal) {
-      modal.style.display = 'none';
-    }
-
     // Enhanced PWA install prompt detection
-    let installPromptEvent = null;
-
     const handleBeforeInstallPrompt = (e) => {
       console.log('PWA install prompt available!');
       e.preventDefault();
-      installPromptEvent = e;
       setDeferredPrompt(e);
-      
-      // Update button state to show it's ready to install
-      console.log('Install button is now ready');
     };
 
     const handleAppInstalled = () => {
       console.log('PWA installed successfully');
       setIsInstalled(true);
       setDeferredPrompt(null);
-      installPromptEvent = null;
     };
 
     // Listen for install events
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     window.addEventListener('appinstalled', handleAppInstalled);
 
-    // Force service worker registration to meet PWA criteria
+    // Register service worker for PWA functionality
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js')
         .then((registration) => {
-          console.log('Service worker registered successfully:', registration.scope);
-          
-          // Check if the page meets PWA install criteria
-          registration.addEventListener('updatefound', () => {
-            console.log('Service worker update found - PWA installable');
-          });
-          
+          console.log('Service worker registered successfully');
         })
         .catch((error) => {
           console.error('Service worker registration failed:', error);
         });
     }
-
-    // Try to force install prompt availability after short delay
-    setTimeout(() => {
-      if (!deferredPrompt) {
-        console.log('No install prompt detected, trying to trigger it...');
-        
-        // Create and dispatch a custom beforeinstallprompt event
-        const syntheticEvent = new CustomEvent('beforeinstallprompt', {
-          cancelable: true,
-          detail: {
-            platforms: ['web']
-          }
-        });
-        
-        // Add required methods to make it work like a real event
-        syntheticEvent.prompt = () => {
-          return Promise.resolve();
-        };
-        
-        syntheticEvent.userChoice = Promise.resolve({ outcome: 'accepted' });
-        
-        window.dispatchEvent(syntheticEvent);
-      }
-    }, 2000);
 
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
