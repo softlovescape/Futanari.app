@@ -266,9 +266,9 @@ const DownloadApp = () => {
         <div className="max-w-6xl mx-auto px-2 sm:px-4 py-4 sm:py-8">
 
           {/* App Header */}
-          <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6 mb-6 sm:mb-8">
+          <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-start sm:gap-6 mb-6 sm:mb-8">
             <div 
-              className="w-24 h-24 sm:w-32 sm:h-32 mx-auto sm:mx-0 rounded-xl sm:rounded-2xl shadow-lg cursor-pointer hover:scale-105 transition-transform duration-300 overflow-hidden border border-gray-200"
+              className="w-24 h-24 sm:w-32 sm:h-32 rounded-xl sm:rounded-2xl shadow-lg cursor-pointer hover:scale-105 transition-transform duration-300 overflow-hidden border border-gray-200"
               onClick={handleAppIconClick}
               title="Click to download icon"
             >
@@ -279,7 +279,7 @@ const DownloadApp = () => {
               />
             </div>
 
-            <div className="flex-1 text-center sm:text-left">
+            <div className="flex-1 text-center sm:text-left w-full sm:w-auto">
               <h1 className="text-xl sm:text-2xl lg:text-3xl font-light text-gray-900 mb-2">Futanari Lovescape App</h1>
               <div className="flex items-center justify-center sm:justify-start text-green-700 text-sm mb-3">
                 <span>Lovescape Studios</span>
@@ -310,20 +310,20 @@ const DownloadApp = () => {
                 </div>
               </div>
 
-              <div className="flex flex-col sm:flex-row items-center gap-4">
+              <div className="flex flex-col items-center sm:flex-row sm:items-center gap-4">
                 <button 
                   onClick={handleInstall}
                   disabled={isInstalled || isDownloading}
-                  className={`w-full sm:w-auto px-8 py-3 text-sm font-medium rounded-lg transition-all ${
+                  className={`w-full max-w-xs sm:w-auto px-8 py-3 text-sm font-medium rounded-lg transition-all ${
                     isInstalled || isDownloading 
-                      ? 'bg-gray-400 cursor-not-allowed' 
+                      ? 'bg-gray-400 cursor-not-allowed text-white' 
                       : 'bg-green-600 hover:bg-green-700 text-white'
                   }`}
                 >
                   {getInstallButtonContent()}
                 </button>
 
-                <div className="flex items-center gap-6">
+                <div className="flex items-center justify-center gap-6">
                   <button className="flex items-center gap-2 text-green-600 hover:bg-green-50 px-4 py-2 rounded-lg transition-colors">
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"></path>
@@ -342,7 +342,7 @@ const DownloadApp = () => {
 
               {/* Android requirement warning */}
               {!isAndroid && (
-                <div className="flex items-center gap-2 mt-4 text-xs text-orange-600 bg-orange-50 px-3 py-2 rounded-lg justify-center sm:justify-start">
+                <div className="flex items-center justify-center sm:justify-start gap-2 mt-4 text-xs text-orange-600 bg-orange-50 px-3 py-2 rounded-lg">
                   <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
                   </svg>
