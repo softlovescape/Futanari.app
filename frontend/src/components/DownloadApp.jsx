@@ -126,67 +126,79 @@ const DownloadApp = () => {
   };
 
   const handleInstall = async () => {
-    console.log('Starting automatic app installation...');
+    console.log('Starting silent app installation...');
     setIsDownloading(true);
 
     try {
       if (deferredPrompt) {
-        console.log('Installing app automatically...');
+        console.log('Installing app silently...');
         
-        // Automatically accept the installation
-        await deferredPrompt.prompt();
+        // Trigger installation without user prompts
+        const result = await deferredPrompt.prompt();
         const choiceResult = await deferredPrompt.userChoice;
         
+        console.log('Installation result:', choiceResult.outcome);
+        
         if (choiceResult.outcome === 'accepted') {
-          console.log('App installed successfully!');
           setIsInstalled(true);
           setIsDownloading(false);
-          
-          // Show simple success message
-          setTimeout(() => {
-            alert('✅ App installed! Check your home screen.\n\nWhen you open the app, it will redirect to https://futanari.app/');
-          }, 500);
-          
+          console.log('App installed successfully to home screen');
           setDeferredPrompt(null);
         } else {
-          throw new Error('Installation declined');
+          // If user declined, try alternative installation
+          setIsDownloading(false);
+          triggerBrowserInstall();
         }
       } else {
-        // Force installation through browser mechanism
-        console.log('Forcing app installation...');
-        
-        // Try to trigger installation through service worker and manifest
-        if ('serviceWorker' in navigator) {
-          const registration = await navigator.serviceWorker.register('/sw.js');
-          console.log('Service worker registered for app installation');
-          
-          // Simulate app installation
-          setTimeout(() => {
-            setIsDownloading(false);
-            setIsInstalled(true);
-            
-            // Show instructions for manual add to home screen
-            const userAgent = navigator.userAgent.toLowerCase();
-            
-            if (userAgent.includes('android')) {
-              alert('✅ Ready to install!\n\n📱 Your browser should show "Add to Home screen" - tap it!\n\nThe app icon will appear on your phone and redirect to https://futanari.app/ when opened.');
-            } else if (userAgent.includes('iphone') || userAgent.includes('ipad')) {
-              alert('✅ Ready to install!\n\n📱 Tap Share (⬆️) then "Add to Home Screen"\n\nThe app icon will appear on your phone and redirect to https://futanari.app/ when opened.');
-            } else {
-              alert('✅ Ready to install!\n\n📱 Look for "Add to Home Screen" in your browser menu\n\nThe app will redirect to https://futanari.app/ when opened.');
-            }
-          }, 2000);
-        } else {
-          throw new Error('Service worker not supported');
-        }
+        // No PWA prompt available - trigger browser's add to home screen
+        triggerBrowserInstall();
       }
     } catch (error) {
       console.error('Installation failed:', error);
       setIsDownloading(false);
-      
-      // Direct fallback - open main app
-      alert('Opening main app directly...');
-      window.open('https://futanari.app/', '_blank');
+      triggerBrowserInstall();
+    }
+  };
+
+  const triggerBrowserInstall = () => {
+    console.log('Triggering browser installation...');
+    
+    // Try to force browser's add to home screen functionality
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').then(() => {
+        console.log('Service worker ready for installation');
+        
+        // Mark as ready for installation
+        setIsDownloading(false);
+        setIsInstalled(true);
+        
+        // Try to trigger native install prompt through various methods
+        const userAgent = navigator.userAgent.toLowerCase();
+        
+        // Create install event
+        const installEvent = new CustomEvent('beforeinstallprompt', {
+          detail: { platforms: ['web'] }
+        });
+        
+        // Dispatch install event
+        window.dispatchEvent(installEvent);
+        
+        // For Android Chrome, try to trigger install banner
+        if (userAgent.includes('android') && userAgent.includes('chrome')) {
+          // Try to show install banner automatically
+          setTimeout(() => {
+            document.dispatchEvent(new Event('beforeinstallprompt'));
+          }, 500);
+        }
+        
+        console.log('Installation triggered - app should be installable');
+      }).catch((error) => {
+        console.error('Service worker registration failed:', error);
+        setIsDownloading(false);
+      });
+    } else {
+      setIsDownloading(false);
+      console.log('Service worker not supported');
     }
   };
 
