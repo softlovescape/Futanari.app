@@ -175,168 +175,188 @@ const DownloadApp = () => {
   };
 
   const handleInstall = async () => {
-    console.log('Starting real app installation...');
+    console.log('Starting PWA installation with app icon...');
     setIsDownloading(true);
 
     try {
-      // Create a real installable app file
-      const createInstallableApp = () => {
-        const appHtml = `<!DOCTYPE html>
-<html lang="en" manifest="app.manifest">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Futanari Lovescape</title>
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Lovescape">
-    <meta name="theme-color" content="#137333">
-    <link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChAFUGpjlwAAAABJRU5ErkJggg==" sizes="192x192">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #137333 0%, #34a853 100%);
+      // First try native PWA installation
+      if (deferredPrompt) {
+        console.log('Using native PWA installation...');
+        
+        const result = await deferredPrompt.prompt();
+        const choiceResult = await deferredPrompt.userChoice;
+        
+        if (choiceResult.outcome === 'accepted') {
+          console.log('PWA installed - app icon should appear on home screen');
+          setIsInstalled(true);
+          setIsDownloading(false);
+          setDeferredPrompt(null);
+          return;
+        }
+      }
+
+      // Force PWA installation by improving conditions
+      console.log('Forcing PWA installation...');
+      
+      // Register enhanced service worker
+      if ('serviceWorker' in navigator) {
+        const registration = await navigator.serviceWorker.register('/sw.js');
+        await registration.update();
+        
+        // Wait for service worker to be ready
+        await navigator.serviceWorker.ready;
+        console.log('Service worker ready for PWA installation');
+      }
+
+      setIsDownloading(false);
+
+      // Create installation guide modal that actually works
+      const installModal = document.createElement('div');
+      installModal.innerHTML = `
+        <div style="
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(0,0,0,0.9);
+          z-index: 10000;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: white;
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          padding: 20px;
+        ">
+          <div style="
+            background: linear-gradient(135deg, #137333, #34a853);
             color: white;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 350px;
+            width: 100%;
             text-align: center;
-            padding: 20px;
-        }
-        .app-icon {
-            width: 120px;
-            height: 120px;
-            background: white;
-            border-radius: 24px;
-            margin-bottom: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 48px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-        }
-        h1 { font-size: 28px; font-weight: 300; margin-bottom: 16px; }
-        .subtitle { font-size: 16px; opacity: 0.9; margin-bottom: 40px; }
-        .loading {
-            width: 50px;
-            height: 50px;
-            border: 4px solid rgba(255,255,255,0.3);
-            border-top-color: white;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 24px;
-        }
-        .status { font-size: 18px; font-weight: 500; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-    </style>
-</head>
-<body>
-    <div class="app-icon">🎮</div>
-    <h1>Futanari Lovescape</h1>
-    <p class="subtitle">AI Character Chat Application</p>
-    <div class="loading"></div>
-    <p class="status">Opening main application...</p>
-    
-    <script>
-        // Immediate redirect to main app
-        setTimeout(function() {
-            window.location.href = 'https://futanari.app/';
-        }, 2000);
-        
-        // Also try to redirect if user interacts
-        document.addEventListener('click', function() {
-            window.location.href = 'https://futanari.app/';
-        });
-    </script>
-</body>
-</html>`;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+          ">
+            <div style="
+              width: 80px;
+              height: 80px;
+              background: white;
+              border-radius: 16px;
+              margin: 0 auto 20px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-size: 32px;
+            ">🎮</div>
+            
+            <h2 style="margin: 0 0 10px 0; font-size: 22px; font-weight: 600;">Install Lovescape App</h2>
+            <p style="margin: 0 0 25px 0; font-size: 14px; opacity: 0.9;">Add app icon to your home screen</p>
+            
+            <div style="
+              background: rgba(255,255,255,0.1);
+              padding: 20px;
+              border-radius: 12px;
+              margin-bottom: 20px;
+              text-align: left;
+              font-size: 14px;
+            ">
+              <div style="display: flex; align-items: center; margin-bottom: 12px;">
+                <span style="
+                  display: inline-block;
+                  width: 24px;
+                  height: 24px;
+                  background: white;
+                  color: #137333;
+                  border-radius: 50%;
+                  text-align: center;
+                  line-height: 24px;
+                  font-weight: bold;
+                  margin-right: 12px;
+                  font-size: 12px;
+                ">1</span>
+                <span>Tap your browser menu <strong>(⋮)</strong></span>
+              </div>
+              <div style="display: flex; align-items: center; margin-bottom: 12px;">
+                <span style="
+                  display: inline-block;
+                  width: 24px;
+                  height: 24px;
+                  background: white;
+                  color: #137333;
+                  border-radius: 50%;
+                  text-align: center;
+                  line-height: 24px;
+                  font-weight: bold;
+                  margin-right: 12px;
+                  font-size: 12px;
+                ">2</span>
+                <span>Select <strong>"Add to Home screen"</strong></span>
+              </div>
+              <div style="display: flex; align-items: center;">
+                <span style="
+                  display: inline-block;
+                  width: 24px;
+                  height: 24px;
+                  background: white;
+                  color: #137333;
+                  border-radius: 50%;
+                  text-align: center;
+                  line-height: 24px;
+                  font-weight: bold;
+                  margin-right: 12px;
+                  font-size: 12px;
+                ">3</span>
+                <span>Tap <strong>"Add"</strong> to install</span>
+              </div>
+            </div>
+            
+            <p style="
+              margin: 0 0 20px 0; 
+              font-size: 13px; 
+              opacity: 0.8;
+              background: rgba(255,255,255,0.1);
+              padding: 10px;
+              border-radius: 8px;
+            ">✨ App icon will appear on your home screen!</p>
+            
+            <button onclick="this.parentElement.parentElement.remove();" style="
+              background: white;
+              color: #137333;
+              border: none;
+              padding: 12px 30px;
+              border-radius: 25px;
+              font-size: 16px;
+              font-weight: 600;
+              cursor: pointer;
+              width: 100%;
+              margin-bottom: 10px;
+            ">Got it!</button>
+            
+            <p style="
+              margin: 10px 0 0 0; 
+              font-size: 12px; 
+              opacity: 0.7;
+            ">When you open the app, it will redirect to https://futanari.app/</p>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(installModal);
 
-        return appHtml;
-      };
-
-      const appContent = createInstallableApp();
-      
-      // Create downloadable app file
-      const blob = new Blob([appContent], { type: 'text/html' });
-      const url = URL.createObjectURL(blob);
-      
-      // Create download link
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = 'Futanari-Lovescape-App.html';
-      link.style.display = 'none';
-      
-      // Add to DOM and trigger download
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      
-      // Clean up
+      // Try to trigger browser's install prompt
       setTimeout(() => {
-        URL.revokeObjectURL(url);
+        // Dispatch install event
+        const installEvent = new Event('beforeinstallprompt');
+        window.dispatchEvent(installEvent);
       }, 1000);
-
-      // Show success and installation instructions
-      setTimeout(() => {
-        setIsDownloading(false);
-        setIsInstalled(true);
-        
-        // Detect platform and show specific instructions
-        const userAgent = navigator.userAgent.toLowerCase();
-        const isIOS = /ipad|iphone|ipod/.test(userAgent);
-        const isAndroid = userAgent.includes('android');
-        
-        let instructions = '';
-        
-        if (isIOS) {
-          instructions = `✅ App Downloaded!
-
-📱 To Install on iPhone/iPad:
-1. Check your Downloads folder
-2. Tap "Futanari-Lovescape-App.html"
-3. Tap Share (⬆️) → "Add to Home Screen"
-4. Tap "Add"
-
-🎯 When you open the app, it will redirect to https://futanari.app/`;
-        } else if (isAndroid) {
-          instructions = `✅ App Downloaded!
-
-📱 To Install on Android:
-1. Check your Downloads folder  
-2. Tap "Futanari-Lovescape-App.html"
-3. When it opens, tap Menu (⋮) → "Add to Home screen"
-4. Tap "Add"
-
-🎯 When you open the app, it will redirect to https://futanari.app/`;
-        } else {
-          instructions = `✅ App Downloaded!
-
-📱 To Install:
-1. Check your Downloads folder
-2. Open "Futanari-Lovescape-App.html" 
-3. Use your browser's "Add to Home Screen" option
-4. Follow the prompts to install
-
-🎯 When you open the app, it will redirect to https://futanari.app/`;
-        }
-        
-        alert(instructions);
-        
-      }, 1500);
 
     } catch (error) {
-      console.error('Installation failed:', error);
+      console.error('Installation error:', error);
       setIsDownloading(false);
       
-      // Fallback - direct redirect to main app
-      alert('Unable to install app on this device.\n\nOpening main application directly...');
-      setTimeout(() => {
-        window.open('https://futanari.app/', '_blank');
-      }, 1000);
+      // Fallback
+      alert('Unable to install app automatically.\n\nPlease use your browser\'s "Add to Home Screen" option to create an app icon.');
     }
   };
 
