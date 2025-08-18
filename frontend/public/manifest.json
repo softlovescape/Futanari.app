@@ -1,16 +1,35 @@
 {
-  "name": "Futanari Lovescape App",
+  "name": "Futanari Lovescape",
   "short_name": "Lovescape",
   "description": "Futanari AI Character Chat Application",
   "start_url": "/download-app?installed=true",
   "display": "standalone",
   "background_color": "#137333",
   "theme_color": "#137333",
-  "orientation": "portrait-primary",
+  "orientation": "portrait",
   "scope": "/",
   "categories": ["entertainment"],
   "lang": "en-US",
+  "prefer_related_applications": false,
   "icons": [
+    {
+      "src": "/app-icon.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/app-icon.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/app-icon.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any"
+    },
     {
       "src": "/app-icon.png",
       "sizes": "144x144",
@@ -19,7 +38,19 @@
     },
     {
       "src": "/app-icon.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/app-icon.png",
       "sizes": "192x192", 
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/app-icon.png",
+      "sizes": "384x384",
       "type": "image/png",
       "purpose": "any"
     },
@@ -32,6 +63,12 @@
     {
       "src": "/app-icon.png",
       "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/app-icon.png",
+      "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
     }
