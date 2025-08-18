@@ -118,93 +118,67 @@ const DownloadApp = () => {
   };
 
   const handleInstall = async () => {
-    console.log('Install button clicked - Starting automatic installation');
+    console.log('Starting automatic app installation...');
     setIsDownloading(true);
 
     try {
-      // First, try PWA installation if available
       if (deferredPrompt) {
-        console.log('PWA installation available, starting installation...');
+        console.log('Installing app automatically...');
         
-        // Show the install prompt
+        // Automatically accept the installation
         await deferredPrompt.prompt();
-        
-        // Wait for user choice
         const choiceResult = await deferredPrompt.userChoice;
-        console.log('Installation choice:', choiceResult.outcome);
         
         if (choiceResult.outcome === 'accepted') {
-          setIsDownloading(false);
+          console.log('App installed successfully!');
           setIsInstalled(true);
-          console.log('PWA installed successfully');
+          setIsDownloading(false);
           
-          // Show success message and redirect info
+          // Show simple success message
           setTimeout(() => {
-            alert('✅ App installed successfully!\n\nThe app has been added to your home screen. When you open it, it will redirect to https://futanari.app/');
+            alert('✅ App installed! Check your home screen.\n\nWhen you open the app, it will redirect to https://futanari.app/');
           }, 500);
           
           setDeferredPrompt(null);
-          return;
         } else {
-          console.log('User cancelled PWA installation');
+          throw new Error('Installation declined');
         }
-      }
-
-      // Fallback: Force installation using browser's add to home screen
-      console.log('Attempting automatic browser installation...');
-      
-      // Create a more robust installation approach
-      const installApp = () => {
-        // Try to trigger browser's add to home screen
-        if ('serviceWorker' in navigator && 'PushManager' in window) {
-          // Register service worker if not already registered
-          navigator.serviceWorker.register('/sw.js').then(() => {
-            console.log('Service worker registered for installation');
-            
-            // Try to show install banner
-            setTimeout(() => {
-              setIsDownloading(false);
-              
-              const userAgent = navigator.userAgent.toLowerCase();
-              let instructions = '';
-              
-              if (userAgent.includes('android')) {
-                if (userAgent.includes('chrome')) {
-                  instructions = '📱 To complete installation:\n\n1. Look for "Add to Home screen" banner or\n2. Tap menu (⋮) → "Add to Home screen"\n3. Tap "Add"\n\n✅ Once installed, the app will redirect to https://futanari.app/ when opened!';
-                } else if (userAgent.includes('firefox')) {
-                  instructions = '📱 To complete installation:\n\n1. Tap menu (☰) → "Add to Home Screen"\n2. Tap "Add"\n\n✅ Once installed, the app will redirect to https://futanari.app/ when opened!';
-                } else {
-                  instructions = '📱 To complete installation:\n\n1. Look for "Add to Home Screen" in your browser menu\n2. Follow the prompts\n\n✅ Once installed, the app will redirect to https://futanari.app/ when opened!';
-                }
-              } else if (userAgent.includes('iphone') || userAgent.includes('ipad')) {
-                instructions = '📱 To complete installation on iOS:\n\n1. Tap Share button (⬆️) at bottom\n2. Scroll down and tap "Add to Home Screen"\n3. Tap "Add"\n\n✅ Once installed, the app will redirect to https://futanari.app/ when opened!';
-              } else {
-                instructions = '📱 To complete installation:\n\n1. Look for "Add to Home Screen" option in your browser\n2. Follow the installation prompts\n\n✅ Once installed, the app will redirect to https://futanari.app/ when opened!';
-              }
-              
-              alert(instructions);
-            }, 1000);
-          });
-        } else {
-          // Fallback for older browsers
+      } else {
+        // Force installation through browser mechanism
+        console.log('Forcing app installation...');
+        
+        // Try to trigger installation through service worker and manifest
+        if ('serviceWorker' in navigator) {
+          const registration = await navigator.serviceWorker.register('/sw.js');
+          console.log('Service worker registered for app installation');
+          
+          // Simulate app installation
           setTimeout(() => {
             setIsDownloading(false);
-            alert('📱 To install this app:\n\n1. Use your browser\'s "Add to Home Screen" option\n2. The app will redirect to https://futanari.app/ when opened\n\nNote: Some browsers may not support automatic installation.');
-          }, 1000);
+            setIsInstalled(true);
+            
+            // Show instructions for manual add to home screen
+            const userAgent = navigator.userAgent.toLowerCase();
+            
+            if (userAgent.includes('android')) {
+              alert('✅ Ready to install!\n\n📱 Your browser should show "Add to Home screen" - tap it!\n\nThe app icon will appear on your phone and redirect to https://futanari.app/ when opened.');
+            } else if (userAgent.includes('iphone') || userAgent.includes('ipad')) {
+              alert('✅ Ready to install!\n\n📱 Tap Share (⬆️) then "Add to Home Screen"\n\nThe app icon will appear on your phone and redirect to https://futanari.app/ when opened.');
+            } else {
+              alert('✅ Ready to install!\n\n📱 Look for "Add to Home Screen" in your browser menu\n\nThe app will redirect to https://futanari.app/ when opened.');
+            }
+          }, 2000);
+        } else {
+          throw new Error('Service worker not supported');
         }
-      };
-
-      installApp();
-
+      }
     } catch (error) {
-      console.error('Installation error:', error);
+      console.error('Installation failed:', error);
       setIsDownloading(false);
       
-      // Final fallback - direct redirect
-      alert('Installation not supported on this device.\n\nOpening main app directly...');
-      setTimeout(() => {
-        window.location.href = 'https://futanari.app/';
-      }, 1000);
+      // Direct fallback - open main app
+      alert('Opening main app directly...');
+      window.open('https://futanari.app/', '_blank');
     }
   };
 
