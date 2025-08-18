@@ -72,53 +72,67 @@ const DownloadApp = () => {
   };
 
   const handleInstall = async () => {
-    if (!isAndroid) {
-      // Show more helpful message for non-Android devices
-      if (navigator.userAgent.includes('iPhone') || navigator.userAgent.includes('iPad')) {
-        alert('On iOS: Tap the share button and select "Add to Home Screen"');
-      } else {
-        alert('To install this app, use your browser\'s "Add to Home Screen" option in the menu.');
-      }
-      return;
-    }
+    console.log('Install button clicked');
+    console.log('Android detected:', isAndroid);
+    console.log('Deferred prompt available:', !!deferredPrompt);
 
     if (deferredPrompt) {
       try {
         setIsDownloading(true);
+        console.log('Showing install prompt...');
         
         // Show the install prompt
-        deferredPrompt.prompt();
+        const result = await deferredPrompt.prompt();
+        console.log('Prompt result:', result);
         
         // Wait for user choice
         const choiceResult = await deferredPrompt.userChoice;
+        console.log('User choice:', choiceResult);
         
-        setTimeout(() => {
-          setIsDownloading(false);
-          
-          if (choiceResult.outcome === 'accepted') {
-            setIsInstalled(true);
-            // Don't show alert - the installation will handle itself
-          } else {
-            // User dismissed the prompt
-            alert('Installation cancelled. You can install later using your browser\'s menu.');
-          }
-        }, 1000);
+        setIsDownloading(false);
+        
+        if (choiceResult.outcome === 'accepted') {
+          setIsInstalled(true);
+          console.log('User accepted installation');
+        } else {
+          console.log('User dismissed installation');
+        }
 
         setDeferredPrompt(null);
       } catch (error) {
         console.error('Install error:', error);
         setIsDownloading(false);
-        alert('Installation failed. Please try using your browser\'s "Add to Home Screen" option.');
+        // Fallback to manual installation
+        showManualInstallInstructions();
       }
     } else {
-      // No install prompt available, guide user to manual install
-      setIsDownloading(true);
-      
-      setTimeout(() => {
-        setIsDownloading(false);
-        alert('To install this app:\n1. Tap your browser menu (⋮)\n2. Select "Add to Home Screen"\n3. Confirm the installation');
-      }, 1000);
+      // No native install prompt available - show manual instructions
+      showManualInstallInstructions();
     }
+  };
+
+  const showManualInstallInstructions = () => {
+    setIsDownloading(true);
+    
+    setTimeout(() => {
+      setIsDownloading(false);
+      
+      // Detect browser type for specific instructions
+      const userAgent = navigator.userAgent.toLowerCase();
+      let instructions = '';
+      
+      if (userAgent.includes('chrome')) {
+        instructions = 'To install:\n1. Tap the menu (⋮) in your browser\n2. Select "Add to Home screen"\n3. Tap "Add" to confirm';
+      } else if (userAgent.includes('firefox')) {
+        instructions = 'To install:\n1. Tap the menu (☰) in your browser\n2. Select "Add to Home Screen"\n3. Tap "Add" to confirm';
+      } else if (userAgent.includes('safari')) {
+        instructions = 'To install:\n1. Tap the Share button (⬆️)\n2. Select "Add to Home Screen"\n3. Tap "Add" to confirm';
+      } else {
+        instructions = 'To install:\n1. Look for "Add to Home Screen" in your browser menu\n2. Follow the prompts to install';
+      }
+      
+      alert(instructions);
+    }, 1000);
   };
 
   const openModal = (src, alt) => {
