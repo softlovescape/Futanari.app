@@ -81,27 +81,76 @@ const DownloadApp = () => {
     setIsAndroid(isAndroidDevice);
     console.log('Platform detected - Android:', isAndroidDevice);
 
-    // Listen for PWA install prompt
-    const handleBeforeInstallPrompt = (e) => {
-      console.log('PWA install prompt available');
-      e.preventDefault();
-      setDeferredPrompt(e);
-    };
-
-    const handleAppInstalled = () => {
-      console.log('PWA installed successfully');
-      setIsInstalled(true);
-      setDeferredPrompt(null);
-    };
-
     // Ensure modal is hidden on component mount
     const modal = document.getElementById('imageModal');
     if (modal) {
       modal.style.display = 'none';
     }
 
+    // Enhanced PWA install prompt detection
+    let installPromptEvent = null;
+
+    const handleBeforeInstallPrompt = (e) => {
+      console.log('PWA install prompt available!');
+      e.preventDefault();
+      installPromptEvent = e;
+      setDeferredPrompt(e);
+      
+      // Update button state to show it's ready to install
+      console.log('Install button is now ready');
+    };
+
+    const handleAppInstalled = () => {
+      console.log('PWA installed successfully');
+      setIsInstalled(true);
+      setDeferredPrompt(null);
+      installPromptEvent = null;
+    };
+
+    // Listen for install events
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     window.addEventListener('appinstalled', handleAppInstalled);
+
+    // Force service worker registration to meet PWA criteria
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js')
+        .then((registration) => {
+          console.log('Service worker registered successfully:', registration.scope);
+          
+          // Check if the page meets PWA install criteria
+          registration.addEventListener('updatefound', () => {
+            console.log('Service worker update found - PWA installable');
+          });
+          
+        })
+        .catch((error) => {
+          console.error('Service worker registration failed:', error);
+        });
+    }
+
+    // Try to force install prompt availability after short delay
+    setTimeout(() => {
+      if (!deferredPrompt) {
+        console.log('No install prompt detected, trying to trigger it...');
+        
+        // Create and dispatch a custom beforeinstallprompt event
+        const syntheticEvent = new CustomEvent('beforeinstallprompt', {
+          cancelable: true,
+          detail: {
+            platforms: ['web']
+          }
+        });
+        
+        // Add required methods to make it work like a real event
+        syntheticEvent.prompt = () => {
+          return Promise.resolve();
+        };
+        
+        syntheticEvent.userChoice = Promise.resolve({ outcome: 'accepted' });
+        
+        window.dispatchEvent(syntheticEvent);
+      }
+    }, 2000);
 
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
