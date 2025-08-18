@@ -7,16 +7,6 @@ const DownloadApp = () => {
   const [isAndroid, setIsAndroid] = useState(false);
 
   useEffect(() => {
-    // Auto-redirect if opened as PWA
-    const isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
-                        window.navigator.standalone ||
-                        document.referrer.includes('android-app://');
-
-    if (isStandalone) {
-      window.location.href = 'https://futanari.app/';
-      return;
-    }
-
     // Detect Android
     const userAgent = navigator.userAgent.toLowerCase();
     setIsAndroid(userAgent.includes('android'));
