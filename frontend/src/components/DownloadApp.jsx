@@ -119,7 +119,10 @@ const DownloadApp = () => {
   useEffect(() => {
     const handleEscapeKey = (event) => {
       if (event.key === 'Escape') {
-        closeModal();
+        const modal = document.getElementById('imageModal');
+        if (modal && !modal.classList.contains('hidden')) {
+          closeModal();
+        }
       }
     };
 
