@@ -4,11 +4,11 @@ const urlsToCache = [
   '/download-app',
   '/app-icon.png',
   '/manifest.json',
-  '/Screenshot 2025-08-18 at 8.53.55ΓÇ»AM-Photoroom.png',
-  '/Screenshot 2025-08-18 at 8.54.41ΓÇ»AM-Photoroom.png',
-  '/Screenshot 2025-08-18 at 8.55.12ΓÇ»AM-Photoroom.png',
-  '/Screenshot 2025-08-18 at 8.55.37ΓÇ»AM-Photoroom.png',
-  '/Screenshot 2025-08-18 at 8.59.06ΓÇ»AM-Photoroom.png'
+  '/screenshot1.jpg',
+  '/screenshot2.jpg',
+  '/screenshot3.jpg',
+  '/screenshot4.jpg',
+  '/screenshot5.jpg'
 ];
 
 self.addEventListener('install', function(event) {
