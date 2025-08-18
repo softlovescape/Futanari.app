@@ -1,109 +1,58 @@
-const CACHE_NAME = 'futanari-app-v4';
+const CACHE_NAME = 'futanari-app-v5';
 const urlsToCache = [
   '/',
   '/download-app',
   '/app-icon.png',
-  '/manifest.json',
-  '/screenshot1.png',
-  '/screenshot2.png',
-  '/screenshot3.png',
-  '/screenshot4.png',
-  '/screenshot5.png'
+  '/manifest.json'
 ];
 
-// Install event - cache resources immediately
+// Install - cache essential resources
 self.addEventListener('install', function(event) {
-  console.log('Service worker installing for app...');
+  console.log('Service Worker: Installing...');
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(function(cache) {
-        console.log('Caching app resources for installation');
+        console.log('Service Worker: Caching files');
         return cache.addAll(urlsToCache);
       })
       .then(function() {
-        console.log('All resources cached, app ready for installation');
-        // Force immediate activation
+        console.log('Service Worker: Install complete');
         return self.skipWaiting();
       })
   );
 });
 
-// Activate event - take control immediately
+// Activate - clean old caches and take control
 self.addEventListener('activate', function(event) {
-  console.log('Service worker activating...');
+  console.log('Service Worker: Activating...');
   event.waitUntil(
     Promise.all([
-      // Clean up old caches
       caches.keys().then(function(cacheNames) {
         return Promise.all(
           cacheNames.map(function(cacheName) {
             if (cacheName !== CACHE_NAME) {
-              console.log('Deleting old cache:', cacheName);
+              console.log('Service Worker: Deleting old cache:', cacheName);
               return caches.delete(cacheName);
             }
           })
         );
       }),
-      // Take control of all clients immediately
       self.clients.claim()
     ]).then(function() {
-      console.log('Service worker ready - app installable');
-      
-      // Try to trigger install prompt
-      self.clients.matchAll().then(clients => {
-        clients.forEach(client => {
-          client.postMessage({
-            type: 'SW_READY_FOR_INSTALL'
-          });
-        });
-      });
+      console.log('Service Worker: Ready for PWA installation');
     })
   );
 });
 
-// Fetch event - serve cached content
+// Fetch - serve cached content
 self.addEventListener('fetch', function(event) {
   event.respondWith(
     caches.match(event.request)
       .then(function(response) {
-        if (response) {
-          return response;
-        }
-        return fetch(event.request)
-          .then(function(response) {
-            // Don't cache non-successful responses
-            if (!response || response.status !== 200 || response.type !== 'basic') {
-              return response;
-            }
-            
-            // Cache successful responses
-            const responseToCache = response.clone();
-            caches.open(CACHE_NAME)
-              .then(function(cache) {
-                cache.put(event.request, responseToCache);
-              });
-            
-            return response;
-          });
+        return response || fetch(event.request);
       })
       .catch(function() {
-        // Return cached offline page or default response
         return caches.match('/');
       })
   );
-});
-
-// Message handler for communication with main app
-self.addEventListener('message', function(event) {
-  console.log('Service worker received message:', event.data);
-  
-  if (event.data.type === 'TRIGGER_INSTALL') {
-    // Try to trigger installation
-    console.log('Attempting to trigger app installation...');
-    
-    // Send back ready status
-    event.ports[0].postMessage({
-      type: 'INSTALL_READY'
-    });
-  }
 });
