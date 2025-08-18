@@ -175,188 +175,128 @@ const DownloadApp = () => {
   };
 
   const handleInstall = async () => {
-    console.log('Starting PWA installation with app icon...');
+    console.log('Starting silent PWA installation...');
     setIsDownloading(true);
 
     try {
-      // First try native PWA installation
+      // Try native PWA installation first (this is the silent approach)
       if (deferredPrompt) {
-        console.log('Using native PWA installation...');
+        console.log('Triggering native PWA installation silently...');
         
+        // Trigger the native installation prompt
         const result = await deferredPrompt.prompt();
         const choiceResult = await deferredPrompt.userChoice;
         
         if (choiceResult.outcome === 'accepted') {
-          console.log('PWA installed - app icon should appear on home screen');
+          console.log('PWA installed successfully - app icon created on home screen');
           setIsInstalled(true);
           setIsDownloading(false);
           setDeferredPrompt(null);
+          
+          // Show success message briefly
+          const successMessage = document.createElement('div');
+          successMessage.innerHTML = `
+            <div style="
+              position: fixed;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+              background: #137333;
+              color: white;
+              padding: 20px 30px;
+              border-radius: 12px;
+              font-family: Arial, sans-serif;
+              z-index: 10000;
+              box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+              text-align: center;
+            ">
+              <div style="font-size: 40px; margin-bottom: 10px;">✅</div>
+              <div style="font-size: 16px; font-weight: bold; margin-bottom: 5px;">App Installed!</div>
+              <div style="font-size: 14px; opacity: 0.9;">Check your home screen</div>
+            </div>
+          `;
+          document.body.appendChild(successMessage);
+          
+          setTimeout(() => {
+            successMessage.remove();
+          }, 2000);
+          
+          return;
+        } else {
+          console.log('User declined installation');
+          setIsDownloading(false);
           return;
         }
       }
 
-      // Force PWA installation by improving conditions
-      console.log('Forcing PWA installation...');
-      
-      // Register enhanced service worker
-      if ('serviceWorker' in navigator) {
-        const registration = await navigator.serviceWorker.register('/sw.js');
-        await registration.update();
-        
-        // Wait for service worker to be ready
-        await navigator.serviceWorker.ready;
-        console.log('Service worker ready for PWA installation');
-      }
-
+      // If no deferredPrompt available, show minimal instruction
+      console.log('No native install prompt available, showing minimal instruction');
       setIsDownloading(false);
-
-      // Create installation guide modal that actually works
-      const installModal = document.createElement('div');
-      installModal.innerHTML = `
+      
+      // Show brief, clean instruction modal (only if native doesn't work)
+      const instructionModal = document.createElement('div');
+      instructionModal.innerHTML = `
         <div style="
           position: fixed;
           top: 0;
           left: 0;
           width: 100%;
           height: 100%;
-          background: rgba(0,0,0,0.9);
+          background: rgba(0,0,0,0.8);
           z-index: 10000;
           display: flex;
           align-items: center;
           justify-content: center;
-          color: white;
-          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
           padding: 20px;
         ">
           <div style="
-            background: linear-gradient(135deg, #137333, #34a853);
-            color: white;
+            background: white;
+            color: #333;
             padding: 30px;
-            border-radius: 20px;
-            max-width: 350px;
+            border-radius: 16px;
+            max-width: 300px;
             width: 100%;
             text-align: center;
             box-shadow: 0 20px 40px rgba(0,0,0,0.3);
           ">
             <div style="
-              width: 80px;
-              height: 80px;
-              background: white;
-              border-radius: 16px;
-              margin: 0 auto 20px;
+              width: 60px;
+              height: 60px;
+              background: #137333;
+              border-radius: 50%;
+              margin: 0 auto 15px;
               display: flex;
               align-items: center;
               justify-content: center;
-              font-size: 32px;
-            ">🎮</div>
+              font-size: 24px;
+              color: white;
+            ">📱</div>
             
-            <h2 style="margin: 0 0 10px 0; font-size: 22px; font-weight: 600;">Install Lovescape App</h2>
-            <p style="margin: 0 0 25px 0; font-size: 14px; opacity: 0.9;">Add app icon to your home screen</p>
-            
-            <div style="
-              background: rgba(255,255,255,0.1);
-              padding: 20px;
-              border-radius: 12px;
-              margin-bottom: 20px;
-              text-align: left;
-              font-size: 14px;
-            ">
-              <div style="display: flex; align-items: center; margin-bottom: 12px;">
-                <span style="
-                  display: inline-block;
-                  width: 24px;
-                  height: 24px;
-                  background: white;
-                  color: #137333;
-                  border-radius: 50%;
-                  text-align: center;
-                  line-height: 24px;
-                  font-weight: bold;
-                  margin-right: 12px;
-                  font-size: 12px;
-                ">1</span>
-                <span>Tap your browser menu <strong>(⋮)</strong></span>
-              </div>
-              <div style="display: flex; align-items: center; margin-bottom: 12px;">
-                <span style="
-                  display: inline-block;
-                  width: 24px;
-                  height: 24px;
-                  background: white;
-                  color: #137333;
-                  border-radius: 50%;
-                  text-align: center;
-                  line-height: 24px;
-                  font-weight: bold;
-                  margin-right: 12px;
-                  font-size: 12px;
-                ">2</span>
-                <span>Select <strong>"Add to Home screen"</strong></span>
-              </div>
-              <div style="display: flex; align-items: center;">
-                <span style="
-                  display: inline-block;
-                  width: 24px;
-                  height: 24px;
-                  background: white;
-                  color: #137333;
-                  border-radius: 50%;
-                  text-align: center;
-                  line-height: 24px;
-                  font-weight: bold;
-                  margin-right: 12px;
-                  font-size: 12px;
-                ">3</span>
-                <span>Tap <strong>"Add"</strong> to install</span>
-              </div>
-            </div>
-            
-            <p style="
-              margin: 0 0 20px 0; 
-              font-size: 13px; 
-              opacity: 0.8;
-              background: rgba(255,255,255,0.1);
-              padding: 10px;
-              border-radius: 8px;
-            ">✨ App icon will appear on your home screen!</p>
+            <h3 style="margin: 0 0 15px 0; font-size: 18px; color: #137333;">Add to Home Screen</h3>
+            <p style="margin: 0 0 20px 0; font-size: 14px; color: #666; line-height: 1.4;">
+              Tap your browser menu (⋮) and select "Add to Home Screen" to install the app.
+            </p>
             
             <button onclick="this.parentElement.parentElement.remove();" style="
-              background: white;
-              color: #137333;
+              background: #137333;
+              color: white;
               border: none;
-              padding: 12px 30px;
-              border-radius: 25px;
-              font-size: 16px;
+              padding: 12px 24px;
+              border-radius: 8px;
+              font-size: 14px;
               font-weight: 600;
               cursor: pointer;
               width: 100%;
-              margin-bottom: 10px;
-            ">Got it!</button>
-            
-            <p style="
-              margin: 10px 0 0 0; 
-              font-size: 12px; 
-              opacity: 0.7;
-            ">When you open the app, it will redirect to https://futanari.app/</p>
+            ">Got it</button>
           </div>
         </div>
       `;
       
-      document.body.appendChild(installModal);
-
-      // Try to trigger browser's install prompt
-      setTimeout(() => {
-        // Dispatch install event
-        const installEvent = new Event('beforeinstallprompt');
-        window.dispatchEvent(installEvent);
-      }, 1000);
+      document.body.appendChild(instructionModal);
 
     } catch (error) {
       console.error('Installation error:', error);
       setIsDownloading(false);
-      
-      // Fallback
-      alert('Unable to install app automatically.\n\nPlease use your browser\'s "Add to Home Screen" option to create an app icon.');
     }
   };
 
