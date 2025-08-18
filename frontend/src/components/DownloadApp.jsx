@@ -136,6 +136,49 @@ const DownloadApp = () => {
     }
   };
 
+  const reviews = [
+    {
+      id: 1,
+      author: "SakuraFan92",
+      avatar: "S",
+      date: "15.07.2025",
+      rating: 5,
+      text: "Absolutely mesmerizing! The storytelling is incredible and the characters are so well developed. Can't stop playing!"
+    },
+    {
+      id: 2,
+      author: "FantasyGamer",
+      avatar: "F",
+      date: "14.07.2025",
+      rating: 5,
+      text: "This app exceeded all my expectations. The immersive world-building and choice system is phenomenal."
+    },
+    {
+      id: 3,
+      author: "EroticExplorer",
+      avatar: "E",
+      date: "13.07.2025",
+      rating: 5,
+      text: "Perfect blend of narrative and fantasy. The customization options are amazing!"
+    },
+    {
+      id: 4,
+      author: "AdultGamer2024",
+      avatar: "A",
+      date: "12.07.2025",
+      rating: 5,
+      text: "Finally, an adult game that focuses on story and character development. Highly recommended!"
+    },
+    {
+      id: 5,
+      author: "RolePlayKing",
+      avatar: "R",
+      date: "11.07.2025",
+      rating: 5,
+      text: "The voice acting and visuals are top-notch. This sets a new standard for adult gaming."
+    }
+  ];
+
   return (
     <div className="min-h-screen bg-white font-roboto" style={{
       fontFamily: "'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif",
