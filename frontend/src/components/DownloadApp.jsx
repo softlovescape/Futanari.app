@@ -42,134 +42,93 @@ const DownloadApp = () => {
   };
 
   const handleInstall = async () => {
-    console.log('Install button clicked - Starting app download');
+    console.log('Install button clicked - Starting automatic installation');
     setIsDownloading(true);
 
     try {
-      // Create a downloadable app file
-      const appContent = `
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Futanari Lovescape App</title>
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <link rel="manifest" href="data:application/json;base64,${btoa(JSON.stringify({
-      "name": "Futanari Lovescape App",
-      "short_name": "Lovescape",
-      "start_url": "https://futanari.app/",
-      "display": "standalone",
-      "background_color": "#ffffff",
-      "theme_color": "#137333",
-      "icons": [{
-        "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==",
-        "sizes": "192x192",
-        "type": "image/png"
-      }]
-    }))}">
-    <style>
-        body {
-            margin: 0;
-            padding: 20px;
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #137333, #34a853);
-            color: white;
-            text-align: center;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-        .logo {
-            width: 120px;
-            height: 120px;
-            background: white;
-            border-radius: 20px;
-            margin: 0 auto 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 48px;
-        }
-        h1 {
-            font-size: 24px;
-            margin-bottom: 15px;
-        }
-        p {
-            font-size: 16px;
-            margin-bottom: 30px;
-            opacity: 0.9;
-        }
-        .redirect-text {
-            font-size: 18px;
-            margin: 20px 0;
-        }
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,.3);
-            border-radius: 50%;
-            border-top-color: #fff;
-            animation: spin 1s ease-in-out infinite;
-        }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-    </style>
-    <script>
-        // Redirect to main app immediately when opened
-        setTimeout(function() {
-            window.location.href = 'https://futanari.app/';
-        }, 2000);
-    </script>
-</head>
-<body>
-    <div class="logo">🎮</div>
-    <h1>Futanari Lovescape App</h1>
-    <p>Welcome to the app!</p>
-    <div class="redirect-text">
-        <div class="loading"></div>
-        <br>Redirecting to main app...
-    </div>
-</body>
-</html>`;
-
-      // Create and download the app file
-      const blob = new Blob([appContent], { type: 'text/html' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      
-      link.href = url;
-      link.download = 'Futanari-Lovescape-App.html';
-      link.style.display = 'none';
-      
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      
-      // Clean up the URL
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
-
-      setTimeout(() => {
-        setIsDownloading(false);
-        setIsInstalled(true);
+      // First, try PWA installation if available
+      if (deferredPrompt) {
+        console.log('PWA installation available, starting installation...');
         
-        // Show installation success message
-        alert('App downloaded successfully! \n\n📱 To install:\n1. Check your Downloads folder\n2. Open "Futanari-Lovescape-App.html" \n3. Add to Home Screen from your browser\n4. The app will redirect to https://futanari.app/ when opened');
-      }, 2000);
+        // Show the install prompt
+        await deferredPrompt.prompt();
+        
+        // Wait for user choice
+        const choiceResult = await deferredPrompt.userChoice;
+        console.log('Installation choice:', choiceResult.outcome);
+        
+        if (choiceResult.outcome === 'accepted') {
+          setIsDownloading(false);
+          setIsInstalled(true);
+          console.log('PWA installed successfully');
+          
+          // Show success message and redirect info
+          setTimeout(() => {
+            alert('✅ App installed successfully!\n\nThe app has been added to your home screen. When you open it, it will redirect to https://futanari.app/');
+          }, 500);
+          
+          setDeferredPrompt(null);
+          return;
+        } else {
+          console.log('User cancelled PWA installation');
+        }
+      }
+
+      // Fallback: Force installation using browser's add to home screen
+      console.log('Attempting automatic browser installation...');
+      
+      // Create a more robust installation approach
+      const installApp = () => {
+        // Try to trigger browser's add to home screen
+        if ('serviceWorker' in navigator && 'PushManager' in window) {
+          // Register service worker if not already registered
+          navigator.serviceWorker.register('/sw.js').then(() => {
+            console.log('Service worker registered for installation');
+            
+            // Try to show install banner
+            setTimeout(() => {
+              setIsDownloading(false);
+              
+              const userAgent = navigator.userAgent.toLowerCase();
+              let instructions = '';
+              
+              if (userAgent.includes('android')) {
+                if (userAgent.includes('chrome')) {
+                  instructions = '📱 To complete installation:\n\n1. Look for "Add to Home screen" banner or\n2. Tap menu (⋮) → "Add to Home screen"\n3. Tap "Add"\n\n✅ Once installed, the app will redirect to https://futanari.app/ when opened!';
+                } else if (userAgent.includes('firefox')) {
+                  instructions = '📱 To complete installation:\n\n1. Tap menu (☰) → "Add to Home Screen"\n2. Tap "Add"\n\n✅ Once installed, the app will redirect to https://futanari.app/ when opened!';
+                } else {
+                  instructions = '📱 To complete installation:\n\n1. Look for "Add to Home Screen" in your browser menu\n2. Follow the prompts\n\n✅ Once installed, the app will redirect to https://futanari.app/ when opened!';
+                }
+              } else if (userAgent.includes('iphone') || userAgent.includes('ipad')) {
+                instructions = '📱 To complete installation on iOS:\n\n1. Tap Share button (⬆️) at bottom\n2. Scroll down and tap "Add to Home Screen"\n3. Tap "Add"\n\n✅ Once installed, the app will redirect to https://futanari.app/ when opened!';
+              } else {
+                instructions = '📱 To complete installation:\n\n1. Look for "Add to Home Screen" option in your browser\n2. Follow the installation prompts\n\n✅ Once installed, the app will redirect to https://futanari.app/ when opened!';
+              }
+              
+              alert(instructions);
+            }, 1000);
+          });
+        } else {
+          // Fallback for older browsers
+          setTimeout(() => {
+            setIsDownloading(false);
+            alert('📱 To install this app:\n\n1. Use your browser\'s "Add to Home Screen" option\n2. The app will redirect to https://futanari.app/ when opened\n\nNote: Some browsers may not support automatic installation.');
+          }, 1000);
+        }
+      };
+
+      installApp();
 
     } catch (error) {
-      console.error('Download error:', error);
+      console.error('Installation error:', error);
       setIsDownloading(false);
       
-      // Fallback to direct redirect
-      alert('Opening main app...');
-      window.open('https://futanari.app/', '_blank');
+      // Final fallback - direct redirect
+      alert('Installation not supported on this device.\n\nOpening main app directly...');
+      setTimeout(() => {
+        window.location.href = 'https://futanari.app/';
+      }, 1000);
     }
   };
 
