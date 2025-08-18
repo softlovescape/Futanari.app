@@ -416,15 +416,13 @@ const DownloadApp = () => {
                 </div>
               </div>
 
-              {/* Android requirement warning */}
-              {!isAndroid && (
-                <div className="flex items-center justify-center sm:justify-start gap-2 mt-4 text-xs text-orange-600 bg-orange-50 px-3 py-2 rounded-lg">
-                  <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
-                  </svg>
-                  <span>This app can only be installed on Android devices</span>
-                </div>
-              )}
+              {/* Download information */}
+              <div className="flex items-center justify-center sm:justify-start gap-2 mt-4 text-xs text-green-600 bg-green-50 px-3 py-2 rounded-lg">
+                <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                <span>Download will start automatically when you tap Install</span>
+              </div>
             </div>
           </div>
 
