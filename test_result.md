@@ -279,12 +279,13 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Download App Page"
+    - "PWA Silent Installation Fix"
     - "Social Media Meta Tags"
     - "Complete Landing Page Functionality" 
-  stuck_tasks: []
+  stuck_tasks: 
+    - "PWA Silent Installation Fix"
   test_all: false
-  test_priority: "high_first"
+  test_priority: "stuck_first"
 
 agent_communication:
     - agent: "main"
