@@ -53,37 +53,53 @@ const DownloadApp = () => {
     }, 1500);
   };
 
-  const handleInstall = () => {
+  const handleInstall = async () => {
     if (!isAndroid) {
-      alert('This app can only be installed on Android devices.');
+      // Show more helpful message for non-Android devices
+      if (navigator.userAgent.includes('iPhone') || navigator.userAgent.includes('iPad')) {
+        alert('On iOS: Tap the share button and select "Add to Home Screen"');
+      } else {
+        alert('To install this app, use your browser\'s "Add to Home Screen" option in the menu.');
+      }
       return;
     }
 
     if (deferredPrompt) {
-      setIsDownloading(true);
-
-      deferredPrompt.prompt();
-      deferredPrompt.userChoice.then((choiceResult) => {
+      try {
+        setIsDownloading(true);
+        
+        // Show the install prompt
+        deferredPrompt.prompt();
+        
+        // Wait for user choice
+        const choiceResult = await deferredPrompt.userChoice;
+        
         setTimeout(() => {
           setIsDownloading(false);
-
+          
           if (choiceResult.outcome === 'accepted') {
             setIsInstalled(true);
-            alert('App installed successfully! You can find it on your home screen.');
+            // Don't show alert - the installation will handle itself
           } else {
-            alert('To install this app, please use your browser\'s "Add to Home Screen" option in the menu.');
+            // User dismissed the prompt
+            alert('Installation cancelled. You can install later using your browser\'s menu.');
           }
         }, 1000);
 
         setDeferredPrompt(null);
-      });
+      } catch (error) {
+        console.error('Install error:', error);
+        setIsDownloading(false);
+        alert('Installation failed. Please try using your browser\'s "Add to Home Screen" option.');
+      }
     } else {
+      // No install prompt available, guide user to manual install
       setIsDownloading(true);
-
+      
       setTimeout(() => {
         setIsDownloading(false);
-        alert('To install this app, please use your browser\'s "Add to Home Screen" option in the menu.');
-      }, 2000);
+        alert('To install this app:\n1. Tap your browser menu (⋮)\n2. Select "Add to Home Screen"\n3. Confirm the installation');
+      }, 1000);
     }
   };
 
