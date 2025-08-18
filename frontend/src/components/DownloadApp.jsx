@@ -21,6 +21,12 @@ const DownloadApp = () => {
     const userAgent = navigator.userAgent.toLowerCase();
     setIsAndroid(userAgent.includes('android'));
 
+    // Ensure modal is hidden on component mount
+    const modal = document.getElementById('imageModal');
+    if (modal) {
+      modal.style.display = 'none';
+    }
+
     // Listen for PWA install prompt
     const handleBeforeInstallPrompt = (e) => {
       e.preventDefault();
