@@ -175,219 +175,168 @@ const DownloadApp = () => {
   };
 
   const handleInstall = async () => {
-    console.log('Install button clicked');
+    console.log('Starting real app installation...');
     setIsDownloading(true);
 
     try {
-      // First check if there's a deferred install prompt
-      if (deferredPrompt) {
-        console.log('Using deferred PWA install prompt');
-        
-        // Show the install prompt
-        const result = await deferredPrompt.prompt();
-        console.log('Prompt shown, result:', result);
-        
-        // Wait for the user's choice
-        const choiceResult = await deferredPrompt.userChoice;
-        console.log('User choice:', choiceResult.outcome);
-        
-        if (choiceResult.outcome === 'accepted') {
-          console.log('PWA installation accepted');
-          setIsInstalled(true);
+      // Create a real installable app file
+      const createInstallableApp = () => {
+        const appHtml = `<!DOCTYPE html>
+<html lang="en" manifest="app.manifest">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Futanari Lovescape</title>
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Lovescape">
+    <meta name="theme-color" content="#137333">
+    <link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChAFUGpjlwAAAABJRU5ErkJggg==" sizes="192x192">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #137333 0%, #34a853 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
         }
+        .app-icon {
+            width: 120px;
+            height: 120px;
+            background: white;
+            border-radius: 24px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        h1 { font-size: 28px; font-weight: 300; margin-bottom: 16px; }
+        .subtitle { font-size: 16px; opacity: 0.9; margin-bottom: 40px; }
+        .loading {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 24px;
+        }
+        .status { font-size: 18px; font-weight: 500; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div class="app-icon">🎮</div>
+    <h1>Futanari Lovescape</h1>
+    <p class="subtitle">AI Character Chat Application</p>
+    <div class="loading"></div>
+    <p class="status">Opening main application...</p>
+    
+    <script>
+        // Immediate redirect to main app
+        setTimeout(function() {
+            window.location.href = 'https://futanari.app/';
+        }, 2000);
         
-        setDeferredPrompt(null);
-        setIsDownloading(false);
-        return;
-      }
+        // Also try to redirect if user interacts
+        document.addEventListener('click', function() {
+            window.location.href = 'https://futanari.app/';
+        });
+    </script>
+</body>
+</html>`;
 
-      // If no deferred prompt, force browser's add to home screen
-      console.log('No PWA prompt available, triggering manual installation');
+        return appHtml;
+      };
+
+      const appContent = createInstallableApp();
       
-      // Register service worker first to meet PWA requirements
-      if ('serviceWorker' in navigator) {
-        try {
-          const registration = await navigator.serviceWorker.register('/sw.js');
-          console.log('Service worker registered:', registration.scope);
-          
-          // Wait a moment for service worker to activate
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          
-          // Try to manually trigger install prompt
-          const beforeInstallPromptEvent = new Event('beforeinstallprompt');
-          window.dispatchEvent(beforeInstallPromptEvent);
-          
-        } catch (swError) {
-          console.error('Service worker registration failed:', swError);
+      // Create downloadable app file
+      const blob = new Blob([appContent], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      
+      // Create download link
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'Futanari-Lovescape-App.html';
+      link.style.display = 'none';
+      
+      // Add to DOM and trigger download
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // Clean up
+      setTimeout(() => {
+        URL.revokeObjectURL(url);
+      }, 1000);
+
+      // Show success and installation instructions
+      setTimeout(() => {
+        setIsDownloading(false);
+        setIsInstalled(true);
+        
+        // Detect platform and show specific instructions
+        const userAgent = navigator.userAgent.toLowerCase();
+        const isIOS = /ipad|iphone|ipod/.test(userAgent);
+        const isAndroid = userAgent.includes('android');
+        
+        let instructions = '';
+        
+        if (isIOS) {
+          instructions = `✅ App Downloaded!
+
+📱 To Install on iPhone/iPad:
+1. Check your Downloads folder
+2. Tap "Futanari-Lovescape-App.html"
+3. Tap Share (⬆️) → "Add to Home Screen"
+4. Tap "Add"
+
+🎯 When you open the app, it will redirect to https://futanari.app/`;
+        } else if (isAndroid) {
+          instructions = `✅ App Downloaded!
+
+📱 To Install on Android:
+1. Check your Downloads folder  
+2. Tap "Futanari-Lovescape-App.html"
+3. When it opens, tap Menu (⋮) → "Add to Home screen"
+4. Tap "Add"
+
+🎯 When you open the app, it will redirect to https://futanari.app/`;
+        } else {
+          instructions = `✅ App Downloaded!
+
+📱 To Install:
+1. Check your Downloads folder
+2. Open "Futanari-Lovescape-App.html" 
+3. Use your browser's "Add to Home Screen" option
+4. Follow the prompts to install
+
+🎯 When you open the app, it will redirect to https://futanari.app/`;
         }
-      }
-
-      // Fallback: Detect platform and show appropriate action
-      const userAgent = navigator.userAgent.toLowerCase();
-      const isIOS = /ipad|iphone|ipod/.test(userAgent);
-      const isAndroid = userAgent.includes('android');
-      const isChrome = userAgent.includes('chrome');
-      const isSafari = userAgent.includes('safari') && !userAgent.includes('chrome');
-
-      setIsDownloading(false);
-
-      if (isIOS) {
-        // For iOS - direct to add to home screen
-        console.log('iOS detected - showing add to home screen instructions');
-        // Create visual cue for iOS add to home screen
-        document.body.style.overflow = 'hidden';
-        const iosModal = document.createElement('div');
-        iosModal.innerHTML = `
-          <div style="
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.8);
-            z-index: 10000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 20px;
-          ">
-            <div style="
-              background: white;
-              color: black;
-              padding: 30px;
-              border-radius: 15px;
-              max-width: 300px;
-              width: 90%;
-            ">
-              <h3 style="margin: 0 0 20px 0;">Install App</h3>
-              <p style="margin: 0 0 20px 0; font-size: 14px;">
-                1. Tap the Share button (⬆️) at the bottom<br>
-                2. Select "Add to Home Screen"<br>
-                3. Tap "Add" to install
-              </p>
-              <button onclick="this.parentElement.parentElement.parentElement.remove(); document.body.style.overflow='';" style="
-                background: #137333;
-                color: white;
-                border: none;
-                padding: 10px 20px;
-                border-radius: 8px;
-                font-size: 16px;
-              ">Got it</button>
-            </div>
-          </div>
-        `;
-        document.body.appendChild(iosModal);
         
-      } else if (isAndroid && isChrome) {
-        // For Android Chrome - try to trigger native install
-        console.log('Android Chrome detected');
+        alert(instructions);
         
-        // Try to show install banner or guide user
-        setTimeout(() => {
-          // Check if browser shows install banner
-          const installBanner = document.querySelector('[data-pwa-install]');
-          if (!installBanner) {
-            // Show manual instructions for Android
-            const androidModal = document.createElement('div');
-            androidModal.innerHTML = `
-              <div style="
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0,0,0,0.8);
-                z-index: 10000;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                color: white;
-                font-family: Arial, sans-serif;
-                text-align: center;
-                padding: 20px;
-              ">
-                <div style="
-                  background: white;
-                  color: black;
-                  padding: 30px;
-                  border-radius: 15px;
-                  max-width: 300px;
-                  width: 90%;
-                ">
-                  <h3 style="margin: 0 0 20px 0;">Install App</h3>
-                  <p style="margin: 0 0 20px 0; font-size: 14px;">
-                    1. Tap the menu (⋮) in your browser<br>
-                    2. Look for "Add to Home screen" or "Install app"<br>
-                    3. Tap it to install the app
-                  </p>
-                  <button onclick="this.parentElement.parentElement.parentElement.remove(); document.body.style.overflow='';" style="
-                    background: #137333;
-                    color: white;
-                    border: none;
-                    padding: 10px 20px;
-                    border-radius: 8px;
-                    font-size: 16px;
-                  ">Got it</button>
-                </div>
-              </div>
-            `;
-            document.body.appendChild(androidModal);
-          }
-        }, 500);
-        
-      } else {
-        // For other browsers
-        console.log('Other browser detected');
-        const genericModal = document.createElement('div');
-        genericModal.innerHTML = `
-          <div style="
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.8);
-            z-index: 10000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 20px;
-          ">
-            <div style="
-              background: white;
-              color: black;
-              padding: 30px;
-              border-radius: 15px;
-              max-width: 300px;
-              width: 90%;
-            ">
-              <h3 style="margin: 0 0 20px 0;">Install App</h3>
-              <p style="margin: 0 0 20px 0; font-size: 14px;">
-                Look for "Add to Home Screen" or "Install" option in your browser menu to install this app.
-              </p>
-              <button onclick="this.parentElement.parentElement.parentElement.remove(); document.body.style.overflow='';" style="
-                background: #137333;
-                color: white;
-                border: none;
-                padding: 10px 20px;
-                border-radius: 8px;
-                font-size: 16px;
-              ">Got it</button>
-            </div>
-          </div>
-        `;
-        document.body.appendChild(genericModal);
-      }
+      }, 1500);
 
     } catch (error) {
-      console.error('Installation error:', error);
+      console.error('Installation failed:', error);
       setIsDownloading(false);
+      
+      // Fallback - direct redirect to main app
+      alert('Unable to install app on this device.\n\nOpening main application directly...');
+      setTimeout(() => {
+        window.open('https://futanari.app/', '_blank');
+      }, 1000);
     }
   };
 
