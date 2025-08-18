@@ -106,6 +106,7 @@ const DownloadApp = () => {
 
     const modal = document.getElementById('imageModal');
     modal.classList.add('hidden');
+    modal.style.display = 'none';
     document.body.style.overflow = '';
   };
 
