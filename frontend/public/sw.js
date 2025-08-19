@@ -1,8 +1,8 @@
-const CACHE_NAME = 'futanari-app-v10';
+const CACHE_NAME = 'futanari-app-v11';
 const urlsToCache = [
   '/',
   '/download-app',
-  '/app-redirect.html',
+  '/pwa-app.html',
   '/app-icon.png',
   '/manifest.json'
 ];
