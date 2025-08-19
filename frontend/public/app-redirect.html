@@ -56,6 +56,16 @@
     <div class="spinner"></div>
 
     <script>
+        // Clean up any old redirect flags from previous implementations
+        try {
+            localStorage.removeItem('pwa_redirect_completed');
+            localStorage.removeItem('redirect_attempts');
+            sessionStorage.removeItem('pwa_has_redirected');
+            sessionStorage.removeItem('pwa_redirected');
+        } catch (e) {
+            // Ignore storage errors
+        }
+        
         // Immediate redirect to the main application
         console.log('PWA app opened - redirecting to futanari.app');
         
