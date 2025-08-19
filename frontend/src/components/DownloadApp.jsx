@@ -150,57 +150,75 @@ const DownloadApp = () => {
           setIsDownloading(false);
           return;
         }
-      } else if (deferredPrompt) {
-        console.log('⚠️ deferredPrompt exists but lacks prompt() method - likely synthetic event');
       }
 
-      // Step 3: Try to trigger browser's Add to Home Screen
-      console.log('🔍 Attempting browser-specific installation methods...');
-
-      // Check if this is a mobile browser that supports PWA installation
-      const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-      const isChrome = /Chrome/.test(navigator.userAgent);
-      const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
+      // Step 3: Force PWA installation by trying to trigger browser prompt
+      console.log('🔧 Attempting to force PWA installation...');
       
-      console.log('Browser detection:', { isMobile, isChrome, isSafari });
-
-      // For Chrome/Edge - try to manually trigger installation
-      if (isChrome && 'serviceWorker' in navigator) {
-        console.log('🔧 Trying Chrome-specific installation approach...');
-        
-        // Ensure service worker is ready
-        await navigator.serviceWorker.ready;
-        
-        // Try to get the current registration and trigger update
-        const registration = await navigator.serviceWorker.getRegistration();
-        if (registration) {
-          await registration.update();
-          console.log('✅ Service worker updated, checking for install prompt...');
-          
-          // Wait briefly for browser to process
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          
-          // If still no deferredPrompt, show browser-specific instructions
-          if (!deferredPrompt) {
-            console.log('📱 Showing Chrome-specific installation instructions');
-            showChromeInstallInstructions();
-            setIsDownloading(false);
-            return;
+      // Ensure service worker is ready and force update
+      if ('serviceWorker' in navigator) {
+        try {
+          await navigator.serviceWorker.ready;
+          const registration = await navigator.serviceWorker.getRegistration();
+          if (registration) {
+            await registration.update();
+            console.log('✅ Service worker updated');
+            
+            // Wait for browser to process PWA conditions
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            
+            // Try again if deferredPrompt became available
+            if (deferredPrompt && typeof deferredPrompt.prompt === 'function') {
+              console.log('✅ Native prompt now available after service worker update');
+              const result = await deferredPrompt.prompt();
+              const choiceResult = await deferredPrompt.userChoice;
+              
+              if (choiceResult.outcome === 'accepted') {
+                console.log('🎉 PWA installed successfully after service worker update');
+                setIsInstalled(true);
+                setIsDownloading(false);
+                setDeferredPrompt(null);
+                showSuccessMessage('App Installed Successfully!', 'Check your home screen');
+                return;
+              }
+            }
           }
+        } catch (swError) {
+          console.error('Service worker error:', swError);
         }
       }
 
-      // For Safari - show Safari-specific instructions
-      if (isSafari && isMobile) {
-        console.log('📱 Showing Safari-specific installation instructions');
+      // Step 4: Check browser and show appropriate instructions
+      const userAgent = navigator.userAgent.toLowerCase();
+      const isChrome = /chrome/.test(userAgent) && !/edg/.test(userAgent);
+      const isSafari = /safari/.test(userAgent) && !/chrome/.test(userAgent);
+      const isEdge = /edg/.test(userAgent);
+      const isFirefox = /firefox/.test(userAgent);
+      const isMobile = /android|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent);
+      
+      console.log('Browser detection:', { isChrome, isSafari, isEdge, isFirefox, isMobile });
+
+      // For Chrome/Edge on mobile - most likely to support PWA
+      if ((isChrome || isEdge) && isMobile) {
+        console.log('📱 Showing Chrome mobile installation instructions');
+        showChromeInstallInstructions();
+      }
+      // For Safari on mobile
+      else if (isSafari && isMobile) {
+        console.log('📱 Showing Safari installation instructions');
         showSafariInstallInstructions();
-        setIsDownloading(false);
-        return;
+      }
+      // For desktop browsers
+      else if (!isMobile) {
+        console.log('💻 Showing desktop installation instructions');
+        showDesktopInstallInstructions();
+      }
+      // General fallback
+      else {
+        console.log('📱 Showing general installation instructions');
+        showGeneralInstallInstructions();
       }
 
-      // Step 4: Fallback for other browsers
-      console.log('📱 Showing general installation instructions');
-      showGeneralInstallInstructions();
       setIsDownloading(false);
 
     } catch (error) {
