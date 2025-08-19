@@ -53,30 +53,40 @@ const DownloadApp = () => {
           await navigator.serviceWorker.ready;
           console.log('✅ Service worker is ready for PWA installation');
           
+          // Set up user engagement tracking for PWA prompt
+          let userEngagementTime = 0;
+          const engagementTimer = setInterval(() => {
+            userEngagementTime += 1000;
+            if (userEngagementTime >= 10000) { // 10 seconds of engagement
+              console.log('✅ User engagement threshold met for PWA prompt');
+              clearInterval(engagementTimer);
+            }
+          }, 1000);
+          
           // Multiple attempts to trigger beforeinstallprompt with longer delays
           const triggerInstallPrompt = async () => {
             console.log('🔍 Attempting to trigger PWA install prompt...');
             
-            // Method 1: Force reload of page to meet PWA criteria
-            if (!deferredPrompt) {
-              // Create and dispatch install ready event
-              const installReadyEvent = new CustomEvent('install-ready', {
+            // Try to force browser to recognize PWA installability
+            if (!deferredPrompt && userEngagementTime >= 5000) {
+              // Force a page interaction that might trigger the prompt
+              const interactionEvent = new MouseEvent('click', {
                 bubbles: true,
-                detail: { ready: true }
+                cancelable: true
               });
-              window.dispatchEvent(installReadyEvent);
+              document.body.dispatchEvent(interactionEvent);
             }
           };
           
           // Trigger after registration with multiple attempts
-          setTimeout(triggerInstallPrompt, 1000);
-          setTimeout(triggerInstallPrompt, 3000);
+          setTimeout(triggerInstallPrompt, 2000);
           setTimeout(triggerInstallPrompt, 5000);
+          setTimeout(triggerInstallPrompt, 10000);
           
           // Also trigger when service worker updates
           registration.addEventListener('updatefound', () => {
             console.log('🔄 Service worker update found - retrying install prompt');
-            setTimeout(triggerInstallPrompt, 500);
+            setTimeout(triggerInstallPrompt, 1000);
           });
         })
         .catch((error) => {
