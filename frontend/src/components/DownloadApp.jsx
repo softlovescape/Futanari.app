@@ -7,7 +7,7 @@ const DownloadApp = () => {
   const [isAndroid, setIsAndroid] = useState(false);
 
   useEffect(() => {
-    // Safe PWA redirect check - only runs once after component mounts
+    // PWA redirect check - only runs once when component first mounts
     const handlePWARedirect = () => {
       // Check if this is a PWA running in standalone mode
       const isStandaloneMode = window.matchMedia('(display-mode: standalone)').matches;
@@ -20,29 +20,39 @@ const DownloadApp = () => {
       console.log('PWA Check:', { isStandaloneMode, isMobilePWA, hasInstalledParam, shouldRedirect });
       
       if (shouldRedirect) {
-        // Check if we've already redirected to prevent loops
-        const hasAlreadyRedirected = sessionStorage.getItem('pwa_has_redirected');
+        // Use localStorage instead of sessionStorage for persistence across redirects
+        const redirectKey = 'pwa_redirect_completed';
+        const hasAlreadyRedirected = localStorage.getItem(redirectKey);
         
         if (!hasAlreadyRedirected) {
-          console.log('PWA detected - redirecting to futanari.app');
-          sessionStorage.setItem('pwa_has_redirected', 'true');
+          console.log('PWA detected - performing ONE-TIME redirect to futanari.app');
           
-          // Clear the flag after 10 seconds to allow future redirects
+          // Set permanent flag to prevent any future redirects in this PWA session
+          localStorage.setItem(redirectKey, Date.now().toString());
+          
+          // Use replace instead of href to prevent back navigation
+          window.location.replace('https://futanari.app/');
+          
+          // Also try alternative redirect methods for better compatibility
           setTimeout(() => {
-            sessionStorage.removeItem('pwa_has_redirected');
-          }, 10000);
+            if (window.location.hostname !== 'futanari.app') {
+              console.log('Fallback redirect attempt');
+              window.open('https://futanari.app/', '_self');
+            }
+          }, 1000);
           
-          // Redirect to main app
-          window.location.href = 'https://futanari.app/';
           return; // Exit early to prevent further execution
         } else {
-          console.log('PWA redirect already performed - preventing loop');
+          console.log('PWA redirect already completed - skipping');
         }
       }
     };
 
-    // Run redirect check after a small delay to ensure page is fully loaded
-    const redirectTimer = setTimeout(handlePWARedirect, 1000);
+    // Only run redirect check once when component first loads
+    let redirectTimer;
+    
+    // Small delay to ensure PWA detection is accurate
+    redirectTimer = setTimeout(handlePWARedirect, 500);
 
     // Regular page initialization continues here only if no redirect
     const userAgent = navigator.userAgent.toLowerCase();
@@ -50,6 +60,14 @@ const DownloadApp = () => {
     
     setIsAndroid(isAndroidDevice);
     console.log('Platform detected - Android:', isAndroidDevice);
+
+    // Cleanup function
+    return () => {
+      if (redirectTimer) {
+        clearTimeout(redirectTimer);
+      }
+    };
+  }, []); // Empty dependency array ensures this only runs once
 
     // Enhanced PWA install prompt detection - only capture real events
     const handleBeforeInstallPrompt = (e) => {
