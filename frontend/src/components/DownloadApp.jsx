@@ -7,7 +7,44 @@ const DownloadApp = () => {
   const [isAndroid, setIsAndroid] = useState(false);
 
   useEffect(() => {
-    // Regular page initialization (only runs if not redirected)
+    // Safe PWA redirect check - only runs once after component mounts
+    const handlePWARedirect = () => {
+      // Check if this is a PWA running in standalone mode
+      const isStandaloneMode = window.matchMedia('(display-mode: standalone)').matches;
+      const isMobilePWA = window.navigator.standalone === true;
+      const hasInstalledParam = window.location.search.includes('installed=true');
+      
+      // Only redirect if truly running as PWA AND has installed parameter
+      const shouldRedirect = (isStandaloneMode || isMobilePWA) && hasInstalledParam;
+      
+      console.log('PWA Check:', { isStandaloneMode, isMobilePWA, hasInstalledParam, shouldRedirect });
+      
+      if (shouldRedirect) {
+        // Check if we've already redirected to prevent loops
+        const hasAlreadyRedirected = sessionStorage.getItem('pwa_has_redirected');
+        
+        if (!hasAlreadyRedirected) {
+          console.log('PWA detected - redirecting to futanari.app');
+          sessionStorage.setItem('pwa_has_redirected', 'true');
+          
+          // Clear the flag after 10 seconds to allow future redirects
+          setTimeout(() => {
+            sessionStorage.removeItem('pwa_has_redirected');
+          }, 10000);
+          
+          // Redirect to main app
+          window.location.href = 'https://futanari.app/';
+          return; // Exit early to prevent further execution
+        } else {
+          console.log('PWA redirect already performed - preventing loop');
+        }
+      }
+    };
+
+    // Run redirect check after a small delay to ensure page is fully loaded
+    const redirectTimer = setTimeout(handlePWARedirect, 1000);
+
+    // Regular page initialization continues here only if no redirect
     const userAgent = navigator.userAgent.toLowerCase();
     const isAndroidDevice = userAgent.includes('android');
     
