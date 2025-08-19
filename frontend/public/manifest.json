@@ -2,7 +2,7 @@
   "name": "Futanari Lovescape App",
   "short_name": "Lovescape",
   "description": "AI Character Chat Application",
-  "start_url": "https://futanari.app/",
+  "start_url": "/app-redirect.html",
   "display": "standalone",
   "background_color": "#137333",
   "theme_color": "#137333",
