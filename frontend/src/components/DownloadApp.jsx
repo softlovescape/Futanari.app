@@ -366,6 +366,74 @@ const DownloadApp = () => {
     document.body.appendChild(modal);
   };
 
+  const showDesktopInstallInstructions = () => {
+    const modal = document.createElement('div');
+    modal.innerHTML = `
+      <div style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.8);
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      ">
+        <div style="
+          background: white;
+          color: #333;
+          padding: 30px;
+          border-radius: 16px;
+          max-width: 400px;
+          width: 100%;
+          text-align: center;
+          box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        ">
+          <div style="
+            width: 60px;
+            height: 60px;
+            background: #137333;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+          ">💻</div>
+          
+          <h3 style="margin: 0 0 15px 0; font-size: 18px; color: #137333;">Install on Desktop</h3>
+          <div style="text-align: left; font-size: 14px; color: #666; margin-bottom: 20px;">
+            <div style="margin-bottom: 10px;"><strong>Chrome/Edge:</strong></div>
+            <div style="margin-bottom: 10px;">1. Click the install icon (⊞) in the address bar</div>
+            <div style="margin-bottom: 10px;">2. Or go to Settings → Install App</div>
+            <div style="margin-bottom: 15px;">3. Click "Install" to add to desktop</div>
+            
+            <div style="margin-bottom: 10px;"><strong>Firefox:</strong></div>
+            <div style="margin-bottom: 10px;">1. Bookmark this page</div>
+            <div>2. Create desktop shortcut from bookmark</div>
+          </div>
+          
+          <button onclick="this.parentElement.parentElement.remove();" style="
+            background: #137333;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+          ">Got it!</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+  };
+
   const showGeneralInstallInstructions = () => {
     const modal = document.createElement('div');
     modal.innerHTML = `
