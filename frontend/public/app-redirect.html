@@ -2,9 +2,63 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <script>window.location.href='https://futanari.app/';</script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Futanari Lovescape</title>
+    <style>
+        body {
+            margin: 0;
+            background: linear-gradient(135deg, #137333, #34a853);
+            color: white;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+            padding: 20px;
+        }
+        .icon {
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+        }
+        .button {
+            background: white;
+            color: #137333;
+            padding: 20px 40px;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
-    <script>window.location.href='https://futanari.app/';</script>
+    <div class="icon">🎮</div>
+    <h1>Futanari Lovescape</h1>
+    <p>Tap the button to open the app</p>
+    <a href="https://futanari.app/" class="button" target="_blank">OPEN APP</a>
+    
+    <script>
+        // Try auto-redirect once, if it fails show button
+        setTimeout(function() {
+            try {
+                window.open('https://futanari.app/', '_blank');
+            } catch(e) {
+                // Button is already visible as fallback
+            }
+        }, 500);
+    </script>
 </body>
 </html>
