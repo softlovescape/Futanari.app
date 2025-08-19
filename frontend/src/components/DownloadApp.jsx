@@ -69,6 +69,7 @@ const DownloadApp = () => {
     };
   }, []); // Empty dependency array ensures this only runs once
 
+  useEffect(() => {
     // Enhanced PWA install prompt detection - only capture real events
     const handleBeforeInstallPrompt = (e) => {
       // Only capture real beforeinstallprompt events that have the prompt method
