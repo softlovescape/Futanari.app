@@ -1,54 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Futanari Lovescape</title>
-    <link rel="icon" href="/app-icon.png">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        html, body {
-            height: 100%;
-            overflow: hidden;
-        }
-        
-        #app-frame {
-            width: 100%;
-            height: 100vh;
-            border: none;
-            display: block;
-        }
-    </style>
 </head>
 <body>
-    <iframe 
-        id="app-frame" 
-        src="https://futanari.app/" 
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-        allowfullscreen
-        referrerpolicy="no-referrer-when-downgrade"
-        sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-pointer-lock allow-top-navigation allow-modals">
-    </iframe>
-    
     <script>
-        // If iframe fails to load, redirect directly
-        const iframe = document.getElementById('app-frame');
-        
-        iframe.onerror = function() {
-            window.location.href = 'https://futanari.app/';
-        };
-        
-        // Fallback: if iframe doesn't load after 3 seconds, redirect
-        setTimeout(function() {
-            if (!iframe.contentDocument) {
-                window.location.href = 'https://futanari.app/';
-            }
-        }, 3000);
+        window.location.replace('https://futanari.app/');
     </script>
 </body>
 </html>
