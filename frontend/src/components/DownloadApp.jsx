@@ -45,6 +45,13 @@ const DownloadApp = () => {
         } else {
           console.log('PWA redirect already completed - skipping');
         }
+      } else {
+        // If not in PWA mode, clear any old redirect flags to allow future PWA redirects
+        const redirectKey = 'pwa_redirect_completed';
+        if (localStorage.getItem(redirectKey)) {
+          console.log('Not in PWA mode - clearing redirect flag for future use');
+          localStorage.removeItem(redirectKey);
+        }
       }
     };
 
