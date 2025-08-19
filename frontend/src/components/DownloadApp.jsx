@@ -29,6 +29,7 @@ const DownloadApp = () => {
       console.log('PWA install prompt available!');
       e.preventDefault();
       setDeferredPrompt(e);
+      console.log('Deferred prompt stored successfully');
     };
 
     const handleAppInstalled = () => {
@@ -41,11 +42,37 @@ const DownloadApp = () => {
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     window.addEventListener('appinstalled', handleAppInstalled);
 
-    // Register service worker for PWA functionality
+    // Register service worker for PWA functionality with improved handling
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js')
         .then((registration) => {
           console.log('Service worker registered successfully');
+          
+          // Force update to ensure latest version
+          registration.addEventListener('updatefound', () => {
+            console.log('Service worker update found - PWA ready for installation');
+          });
+          
+          // Check if service worker is ready and try to trigger install prompt
+          navigator.serviceWorker.ready.then(() => {
+            console.log('Service worker is ready - checking for install prompt');
+            
+            // Wait a bit for browser to process PWA conditions
+            setTimeout(() => {
+              if (!deferredPrompt) {
+                console.log('No install prompt available yet, trying to trigger...');
+                
+                // Dispatch a synthetic event to try to trigger the browser's detection
+                const syntheticEvent = new CustomEvent('beforeinstallprompt', {
+                  bubbles: true,
+                  cancelable: true,
+                  detail: { platforms: ['web'] }
+                });
+                
+                window.dispatchEvent(syntheticEvent);
+              }
+            }, 1000);
+          });
         })
         .catch((error) => {
           console.error('Service worker registration failed:', error);
