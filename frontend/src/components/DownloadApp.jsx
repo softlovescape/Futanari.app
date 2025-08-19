@@ -24,16 +24,16 @@ const DownloadApp = () => {
     setIsAndroid(isAndroidDevice);
     console.log('Platform detected - Android:', isAndroidDevice);
 
-    // Enhanced PWA install prompt detection
+    // Enhanced PWA install prompt detection with aggressive triggering
     const handleBeforeInstallPrompt = (e) => {
-      console.log('PWA install prompt available!');
+      console.log('🎉 PWA install prompt detected and captured!');
       e.preventDefault();
       setDeferredPrompt(e);
-      console.log('Deferred prompt stored successfully');
+      console.log('✅ Deferred prompt stored successfully');
     };
 
     const handleAppInstalled = () => {
-      console.log('PWA installed successfully');
+      console.log('🎉 PWA installed successfully');
       setIsInstalled(true);
       setDeferredPrompt(null);
     };
@@ -42,40 +42,57 @@ const DownloadApp = () => {
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     window.addEventListener('appinstalled', handleAppInstalled);
 
-    // Register service worker for PWA functionality with improved handling
+    // Enhanced service worker registration with aggressive PWA triggering
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js')
-        .then((registration) => {
-          console.log('Service worker registered successfully');
+        .then(async (registration) => {
+          console.log('✅ Service worker registered successfully');
           
-          // Force update to ensure latest version
-          registration.addEventListener('updatefound', () => {
-            console.log('Service worker update found - PWA ready for installation');
-          });
+          // Force immediate update
+          await registration.update();
+          console.log('🔄 Service worker updated');
           
-          // Check if service worker is ready and try to trigger install prompt
-          navigator.serviceWorker.ready.then(() => {
-            console.log('Service worker is ready - checking for install prompt');
+          // Wait for service worker to be ready
+          await navigator.serviceWorker.ready;
+          console.log('✅ Service worker is ready for PWA installation');
+          
+          // Multiple attempts to trigger beforeinstallprompt
+          const triggerInstallPrompt = async () => {
+            console.log('🔍 Attempting to trigger PWA install prompt...');
             
-            // Wait a bit for browser to process PWA conditions
-            setTimeout(() => {
-              if (!deferredPrompt) {
-                console.log('No install prompt available yet, trying to trigger...');
-                
-                // Dispatch a synthetic event to try to trigger the browser's detection
-                const syntheticEvent = new CustomEvent('beforeinstallprompt', {
+            // Method 1: Dispatch custom event
+            const customEvent = new Event('beforeinstallprompt', { 
+              bubbles: true, 
+              cancelable: true 
+            });
+            window.dispatchEvent(customEvent);
+            
+            // Method 2: Try to simulate browser conditions
+            if (!deferredPrompt) {
+              // Wait and try again
+              setTimeout(() => {
+                console.log('🔄 Retrying install prompt trigger...');
+                const retryEvent = new CustomEvent('beforeinstallprompt', {
                   bubbles: true,
                   cancelable: true,
                   detail: { platforms: ['web'] }
                 });
-                
-                window.dispatchEvent(syntheticEvent);
-              }
-            }, 1000);
+                window.dispatchEvent(retryEvent);
+              }, 2000);
+            }
+          };
+          
+          // Trigger after registration
+          setTimeout(triggerInstallPrompt, 1000);
+          
+          // Also trigger when service worker updates
+          registration.addEventListener('updatefound', () => {
+            console.log('🔄 Service worker update found - retrying install prompt');
+            setTimeout(triggerInstallPrompt, 500);
           });
         })
         .catch((error) => {
-          console.error('Service worker registration failed:', error);
+          console.error('❌ Service worker registration failed:', error);
         });
     }
 
