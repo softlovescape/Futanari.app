@@ -1,12 +1,331 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Futanari Lovescape</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Futanari AI Character Chat — NSFW Roleplay Chatbot</title>
+    <meta name="description" content="Immersive futanari roleplay with an AI chatbot. Create characters, enjoy realistic dialogue, instant start, full privacy.">
+    <link rel="icon" href="/app-icon.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+    </style>
 </head>
 <body>
+    <div id="root">
+        <div class="App bg-black min-h-screen">
+            <div class="relative">
+                <!-- Background Video -->
+                <div class="fixed inset-0 w-full h-full overflow-hidden z-0">
+                    <video class="absolute inset-0 w-full h-full object-cover" autoplay playsinline preload="metadata" muted loop>
+                        <source src="https://customer-assets.emergentagent.com/job_86210f7e-097f-4a1d-b538-652380944388/artifacts/p6ftusbw_2.mp4" type="video/mp4">
+                    </video>
+                    <div class="absolute inset-0 bg-black bg-opacity-20"></div>
+                </div>
+
+                <div class="relative z-10">
+                    <!-- Hero Section -->
+                    <section class="relative min-h-screen flex items-center justify-center z-10">
+                        <div class="text-center text-white px-4 fade-in">
+                            <h1 class="text-6xl md:text-8xl font-bold mb-8 tracking-wide">FUTANARI FOR YOU</h1>
+                            <a href="https://lovescape.com/saga" target="_blank" rel="noopener noreferrer" 
+                               class="inline-flex items-center justify-center gap-2 whitespace-nowrap focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 shadow bg-[#e6004c] hover:bg-[#c50042] text-white text-lg px-8 py-4 rounded-lg font-semibold transition-all duration-300 hover:scale-105">
+                                SEE MORE →
+                            </a>
+                        </div>
+                    </section>
+
+                    <!-- Gallery Section -->
+                    <section class="relative z-10 py-20 bg-black bg-opacity-90">
+                        <div class="container mx-auto px-4">
+                            <h2 class="text-4xl md:text-6xl font-bold text-white text-center mb-16 fade-in">Gallery to enjoy</h2>
+                            <div class="relative max-w-4xl mx-auto">
+                                <div class="relative overflow-hidden rounded-lg shadow-2xl">
+                                    <div class="flex transition-transform duration-500 ease-in-out" id="gallery-slider">
+                                        <div class="w-full flex-shrink-0">
+                                            <img alt="Gallery image 1" class="w-full h-96 md:h-[500px] object-cover" 
+                                                 src="https://customer-assets.emergentagent.com/job_86210f7e-097f-4a1d-b538-652380944388/artifacts/vfys931a_image%20-%202025-07-16T123653.921.png">
+                                        </div>
+                                        <div class="w-full flex-shrink-0">
+                                            <img alt="Gallery image 2" class="w-full h-96 md:h-[500px] object-cover" 
+                                                 src="https://customer-assets.emergentagent.com/job_86210f7e-097f-4a1d-b538-652380944388/artifacts/sn8rhnxm_image%20-%202025-07-16T151724.850.png">
+                                        </div>
+                                        <div class="w-full flex-shrink-0">
+                                            <img alt="Gallery image 3" class="w-full h-96 md:h-[500px] object-cover" 
+                                                 src="https://customer-assets.emergentagent.com/job_86210f7e-097f-4a1d-b538-652380944388/artifacts/2l1lz0wx_image%20-%202025-07-16T151740.640.png">
+                                        </div>
+                                        <div class="w-full flex-shrink-0">
+                                            <img alt="Gallery image 4" class="w-full h-96 md:h-[500px] object-cover" 
+                                                 src="https://customer-assets.emergentagent.com/job_86210f7e-097f-4a1d-b538-652380944388/artifacts/6x2kqi0l_image%20-%202025-07-16T151841.279.png">
+                                        </div>
+                                        <div class="w-full flex-shrink-0">
+                                            <img alt="Gallery image 5" class="w-full h-96 md:h-[500px] object-cover" 
+                                                 src="https://customer-assets.emergentagent.com/job_86210f7e-097f-4a1d-b538-652380944388/artifacts/56lbxky0_image%20-%202025-07-16T163558.321.png">
+                                        </div>
+                                        <div class="w-full flex-shrink-0">
+                                            <img alt="Gallery image 6" class="w-full h-96 md:h-[500px] object-cover" 
+                                                 src="https://customer-assets.emergentagent.com/job_86210f7e-097f-4a1d-b538-652380944388/artifacts/2jr9wipe_image%20-%202025-07-16T163950.540.png">
+                                        </div>
+                                        <div class="w-full flex-shrink-0">
+                                            <img alt="Gallery image 7" class="w-full h-96 md:h-[500px] object-cover" 
+                                                 src="https://customer-assets.emergentagent.com/job_86210f7e-097f-4a1d-b538-652380944388/artifacts/huxr201i_image%20-%202025-07-16T164027.510.png">
+                                        </div>
+                                        <div class="w-full flex-shrink-0">
+                                            <img alt="Gallery image 8" class="w-full h-96 md:h-[500px] object-cover" 
+                                                 src="https://customer-assets.emergentagent.com/job_86210f7e-097f-4a1d-b538-652380944388/artifacts/ay48fyg4_image%20-%202025-07-16T164837.790.png">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Navigation Buttons -->
+                                <button onclick="previousImage()" class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-opacity-50 border border-white text-white hover:bg-opacity-70 rounded-md p-2 transition-all">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6">
+                                        <path d="m15 18-6-6 6-6"></path>
+                                    </svg>
+                                </button>
+                                <button onclick="nextImage()" class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-opacity-50 border border-white text-white hover:bg-opacity-70 rounded-md p-2 transition-all">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6">
+                                        <path d="m9 18 6-6-6-6"></path>
+                                    </svg>
+                                </button>
+
+                                <!-- Dots Indicator -->
+                                <div class="flex justify-center mt-6 space-x-2" id="gallery-dots">
+                                    <!-- Dots will be generated by JavaScript -->
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- CTA Section -->
+                    <section class="relative z-10 py-20 bg-gradient-to-b from-gray-900 to-black">
+                        <div class="container mx-auto px-4 text-center">
+                            <h2 class="text-4xl md:text-6xl font-bold text-white mb-6 fade-in">Start Enjoying Futanari Today</h2>
+                            <p class="text-lg md:text-xl text-gray-300 mb-12 max-w-4xl mx-auto leading-relaxed fade-in">
+                                Craft a fully animated, emotionally intelligent companion — bold, unique, yours.
+                            </p>
+                            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center fade-in">
+                                <a href="https://lovescape.com/create-ai-hentai-girlfriend/personality" target="_blank" rel="noopener noreferrer" 
+                                   class="bg-[#e6004c] hover:bg-[#c50042] text-white text-lg px-8 py-4 rounded-lg font-semibold transition-all duration-300 hover:scale-105">
+                                    Create Now →
+                                </a>
+                                <a href="https://lovescape.com/saga" target="_blank" rel="noopener noreferrer" 
+                                   class="bg-[#e6004c] hover:bg-[#c50042] text-white text-lg px-8 py-4 rounded-lg font-semibold transition-all duration-300 hover:scale-105">
+                                    Explore Futa →
+                                </a>
+                                <a href="https://lovescape.com/subscription/pro" target="_blank" rel="noopener noreferrer" 
+                                   class="bg-[#e6004c] hover:bg-[#c50042] text-white text-lg px-8 py-4 rounded-lg font-semibold transition-all duration-300 hover:scale-105">
+                                    Subscribe Pro →
+                                </a>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Video Section -->
+                    <section class="relative z-10 py-0">
+                        <div class="h-96 md:h-[500px] overflow-hidden">
+                            <video class="w-full h-full object-cover" autoplay loop playsinline muted>
+                                <source src="https://customer-assets.emergentagent.com/job_86210f7e-097f-4a1d-b538-652380944388/artifacts/v6lxf1u9_Futanari%207-realistic.mp4" type="video/mp4">
+                            </video>
+                        </div>
+                    </section>
+
+                    <!-- Main Content Section -->
+                    <section class="relative z-10 py-20 bg-black">
+                        <div class="container mx-auto px-4">
+                            <div class="max-w-6xl mx-auto text-center">
+                                <h2 class="text-4xl md:text-5xl font-bold text-white mb-8 leading-tight fade-in">
+                                    Bring Your ai futanari to Life – Personalized AI Characters with Soul, Style, and Precision
+                                </h2>
+                                <h3 class="text-xl md:text-2xl text-gray-300 mb-8 font-medium fade-in">
+                                    Lovescape offers a next-gen platform where your imagination meets intelligent design.
+                                </h3>
+                                <div class="text-lg md:text-xl text-gray-400 leading-relaxed space-y-6 fade-in">
+                                    <p>With our ai futanari generator, you're not just choosing a face — you're shaping a personality, crafting an aesthetic, and forming a lasting connection with a fully responsive, visually stunning AI companion.</p>
+                                    <p>Whether you're building a stylish <span class="text-[#e6004c] font-semibold">futanari ai</span>, a bold and expressive <span class="text-[#e6004c] font-semibold">futanari ai chat</span>, or a deeply emotional <span class="text-[#e6004c] font-semibold">futanari ai art</span>, Lovescape delivers the tools and technology to bring your vision to life — exactly as you imagine it.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Features Grid -->
+                    <section class="relative z-10 py-20 bg-black">
+                        <div class="container mx-auto px-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+                                <div class="flex items-start space-x-4 p-6 rounded-lg bg-gray-900 bg-opacity-50 hover:bg-opacity-70 transition-all duration-300 hover:scale-105 fade-in">
+                                    <div class="text-[#e6004c] flex-shrink-0 mt-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-8 h-8">
+                                            <path d="M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z"></path>
+                                            <circle cx="13.5" cy="6.5" r=".5" fill="currentColor"></circle>
+                                            <circle cx="17.5" cy="10.5" r=".5" fill="currentColor"></circle>
+                                            <circle cx="6.5" cy="12.5" r=".5" fill="currentColor"></circle>
+                                            <circle cx="8.5" cy="7.5" r=".5" fill="currentColor"></circle>
+                                        </svg>
+                                    </div>
+                                    <p class="text-white text-lg leading-relaxed">Create animated characters for visual novels or comics</p>
+                                </div>
+
+                                <div class="flex items-start space-x-4 p-6 rounded-lg bg-gray-900 bg-opacity-50 hover:bg-opacity-70 transition-all duration-300 hover:scale-105 fade-in">
+                                    <div class="text-[#e6004c] flex-shrink-0 mt-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-8 h-8">
+                                            <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path>
+                                        </svg>
+                                    </div>
+                                    <p class="text-white text-lg leading-relaxed">Explore romantic or NSFW narratives through safe, private roleplay</p>
+                                </div>
+
+                                <div class="flex items-start space-x-4 p-6 rounded-lg bg-gray-900 bg-opacity-50 hover:bg-opacity-70 transition-all duration-300 hover:scale-105 fade-in">
+                                    <div class="text-[#e6004c] flex-shrink-0 mt-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-8 h-8">
+                                            <line x1="6" x2="10" y1="11" y2="11"></line>
+                                            <line x1="8" x2="8" y1="9" y2="13"></line>
+                                            <line x1="15" x2="15.01" y1="12" y2="12"></line>
+                                            <line x1="18" x2="18.01" y1="10" y2="10"></line>
+                                            <path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59c-.006.052-.01.101-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258-.007-.05-.011-.1-.017-.151A4 4 0 0 0 17.32 5z"></path>
+                                        </svg>
+                                    </div>
+                                    <p class="text-white text-lg leading-relaxed">Design premium characters for worldbuilding or game development</p>
+                                </div>
+
+                                <div class="flex items-start space-x-4 p-6 rounded-lg bg-gray-900 bg-opacity-50 hover:bg-opacity-70 transition-all duration-300 hover:scale-105 fade-in">
+                                    <div class="text-[#e6004c] flex-shrink-0 mt-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-8 h-8">
+                                            <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"></path>
+                                        </svg>
+                                    </div>
+                                    <p class="text-white text-lg leading-relaxed">Use as emotional support companions in everyday interaction</p>
+                                </div>
+
+                                <div class="flex items-start space-x-4 p-6 rounded-lg bg-gray-900 bg-opacity-50 hover:bg-opacity-70 transition-all duration-300 hover:scale-105 fade-in">
+                                    <div class="text-[#e6004c] flex-shrink-0 mt-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-8 h-8">
+                                            <path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"></path>
+                                            <rect x="2" y="6" width="14" height="12" rx="2"></rect>
+                                        </svg>
+                                    </div>
+                                    <p class="text-white text-lg leading-relaxed">Generate content for Reels, TikToks, or cinematic trailers</p>
+                                </div>
+
+                                <div class="flex items-start space-x-4 p-6 rounded-lg bg-gray-900 bg-opacity-50 hover:bg-opacity-70 transition-all duration-300 hover:scale-105 fade-in">
+                                    <div class="text-[#e6004c] flex-shrink-0 mt-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-8 h-8">
+                                            <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"></path>
+                                            <path d="M20 3v4"></path>
+                                            <path d="M22 5h-4"></path>
+                                            <path d="M4 17v2"></path>
+                                            <path d="M5 18H3"></path>
+                                        </svg>
+                                    </div>
+                                    <p class="text-white text-lg leading-relaxed">Bring original characters (OCs) to life with depth and continuity</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Final Text Section -->
+                    <section class="relative z-10 py-20 bg-black">
+                        <div class="container mx-auto px-4">
+                            <div class="max-w-6xl mx-auto">
+                                <h2 class="text-4xl md:text-5xl font-bold text-white mb-8 text-center fade-in">The Futanari AI Experience: Creativity Unleashed</h2>
+                                <h3 class="text-xl md:text-2xl text-gray-300 mb-12 text-center font-medium fade-in">The futanari AI experience blends niche cultural interests with advanced technology, creating a unique space for creative expression.</h3>
+                                <div class="space-y-8 text-lg text-gray-400 leading-relaxed fade-in">
+                                    <p>Futanari, a term from Japanese pop culture describing characters with both male and female traits, has found a vibrant home on platforms like lovescape. This site harnesses AI tools to offer enthusiasts immersive ways to explore futanari through digital art, interactive chatbots, and character creation, reflecting the growing popularity of searches like <span class="text-[#e6004c] font-semibold">"futanari AI"</span> and <span class="text-[#e6004c] font-semibold">"AI-generated characters."</span></p>
+                                    
+                                    <p>On lovescape, AI-driven digital art tools empower users to craft stunning futanari characters. By entering detailed prompts, fans can generate visuals tailored to their imagination—whether it's an anime-style futanari hero or a cyberpunk-inspired figure with intricate designs. The platform's intuitive interface makes it easy to experiment with styles, colors, and themes, aligning with trending search terms like <span class="text-[#e6004c] font-semibold">"futanari art creation"</span> and <span class="text-[#e6004c] font-semibold">"AI digital art."</span> This hands-on approach gives users unparalleled creative control, turning visions into vivid realities.</p>
+                                    
+                                    <p>Interactive AI chatbots on lovescape elevate the futanari experience further. These tools allow users to engage in dynamic conversations with custom-designed futanari characters, from playful exchanges to deep narrative role-playing. Searches for <span class="text-[#e6004c] font-semibold">"futanari chatbot"</span> and <span class="text-[#e6004c] font-semibold">"AI interactive experience"</span> underscore the demand for such features, as the platform's advanced language models deliver lifelike dialogue. Whether crafting a bold adventurer or a gentle scholar, users can shape their character's personality, creating meaningful and personalized interactions.</p>
+                                    
+                                    <p>Character creation is another highlight of lovescape, where fans build futanari characters with detailed backstories and unique traits. This resonates with searches like <span class="text-[#e6004c] font-semibold">"futanari character creator,"</span> as users design everything from appearance to motivations. The platform fosters a safe space for exploring identity and creativity, though it also prompts discussions about ethical AI use, reflected in searches like <span class="text-[#e6004c] font-semibold">"AI content ethics."</span></p>
+                                    
+                                    <p>Lovescape stands out as a hub for the futanari AI experience, merging art, storytelling, and technology. As searches for <span class="text-[#e6004c] font-semibold">"futanari AI"</span> grow, the platform continues to innovate, offering tools that empower fans to create and connect in meaningful ways, all while navigating the balance between freedom and responsibility.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
-        window.location.replace('https://futanari.app/');
+        let currentSlide = 0;
+        const totalSlides = 8;
+
+        function updateSlider() {
+            const slider = document.getElementById('gallery-slider');
+            const transform = `translateX(-${currentSlide * 100}%)`;
+            slider.style.transform = transform;
+            updateDots();
+        }
+
+        function updateDots() {
+            const dotsContainer = document.getElementById('gallery-dots');
+            dotsContainer.innerHTML = '';
+            
+            for (let i = 0; i < totalSlides; i++) {
+                const dot = document.createElement('button');
+                dot.className = `w-3 h-3 rounded-full transition-all duration-300 ${i === currentSlide ? 'bg-[#e6004c] scale-125' : 'bg-white bg-opacity-50 hover:bg-opacity-75'}`;
+                dot.onclick = () => goToSlide(i);
+                dotsContainer.appendChild(dot);
+            }
+        }
+
+        function nextImage() {
+            currentSlide = (currentSlide + 1) % totalSlides;
+            updateSlider();
+        }
+
+        function previousImage() {
+            currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+            updateSlider();
+        }
+
+        function goToSlide(index) {
+            currentSlide = index;
+            updateSlider();
+        }
+
+        // Initialize gallery
+        document.addEventListener('DOMContentLoaded', function() {
+            updateDots();
+            
+            // Auto-advance gallery every 5 seconds
+            setInterval(nextImage, 5000);
+
+            // Add scroll animations
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('fade-in');
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.fade-in').forEach(el => {
+                observer.observe(el);
+            });
+        });
     </script>
 </body>
 </html>
