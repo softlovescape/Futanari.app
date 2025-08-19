@@ -39,7 +39,7 @@ const DownloadApp = () => {
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     window.addEventListener('appinstalled', handleAppInstalled);
 
-    // Enhanced service worker registration with aggressive PWA triggering
+    // Enhanced service worker registration with more aggressive PWA triggering
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js')
         .then(async (registration) => {
@@ -53,34 +53,25 @@ const DownloadApp = () => {
           await navigator.serviceWorker.ready;
           console.log('✅ Service worker is ready for PWA installation');
           
-          // Multiple attempts to trigger beforeinstallprompt
+          // Multiple attempts to trigger beforeinstallprompt with longer delays
           const triggerInstallPrompt = async () => {
             console.log('🔍 Attempting to trigger PWA install prompt...');
             
-            // Method 1: Dispatch custom event
-            const customEvent = new Event('beforeinstallprompt', { 
-              bubbles: true, 
-              cancelable: true 
-            });
-            window.dispatchEvent(customEvent);
-            
-            // Method 2: Try to simulate browser conditions
+            // Method 1: Force reload of page to meet PWA criteria
             if (!deferredPrompt) {
-              // Wait and try again
-              setTimeout(() => {
-                console.log('🔄 Retrying install prompt trigger...');
-                const retryEvent = new CustomEvent('beforeinstallprompt', {
-                  bubbles: true,
-                  cancelable: true,
-                  detail: { platforms: ['web'] }
-                });
-                window.dispatchEvent(retryEvent);
-              }, 2000);
+              // Create and dispatch install ready event
+              const installReadyEvent = new CustomEvent('install-ready', {
+                bubbles: true,
+                detail: { ready: true }
+              });
+              window.dispatchEvent(installReadyEvent);
             }
           };
           
-          // Trigger after registration
+          // Trigger after registration with multiple attempts
           setTimeout(triggerInstallPrompt, 1000);
+          setTimeout(triggerInstallPrompt, 3000);
+          setTimeout(triggerInstallPrompt, 5000);
           
           // Also trigger when service worker updates
           registration.addEventListener('updatefound', () => {
