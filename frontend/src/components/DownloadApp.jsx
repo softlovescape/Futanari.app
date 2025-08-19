@@ -7,74 +7,13 @@ const DownloadApp = () => {
   const [isAndroid, setIsAndroid] = useState(false);
 
   useEffect(() => {
-    // PWA redirect check - only runs once when component first mounts
-    const handlePWARedirect = () => {
-      // Check if this is a PWA running in standalone mode
-      const isStandaloneMode = window.matchMedia('(display-mode: standalone)').matches;
-      const isMobilePWA = window.navigator.standalone === true;
-      const hasInstalledParam = window.location.search.includes('source=pwa');
-      
-      // Only redirect if truly running as PWA AND has installed parameter
-      const shouldRedirect = (isStandaloneMode || isMobilePWA) && hasInstalledParam;
-      
-      console.log('PWA Check:', { isStandaloneMode, isMobilePWA, hasInstalledParam, shouldRedirect });
-      
-      if (shouldRedirect) {
-        // Use localStorage instead of sessionStorage for persistence across redirects
-        const redirectKey = 'pwa_redirect_completed';
-        const hasAlreadyRedirected = localStorage.getItem(redirectKey);
-        
-        if (!hasAlreadyRedirected) {
-          console.log('PWA detected - performing ONE-TIME redirect to futanari.app');
-          
-          // Set permanent flag to prevent any future redirects in this PWA session
-          localStorage.setItem(redirectKey, Date.now().toString());
-          
-          // Use replace instead of href to prevent back navigation
-          window.location.replace('https://futanari.app/');
-          
-          // Also try alternative redirect methods for better compatibility
-          setTimeout(() => {
-            if (window.location.hostname !== 'futanari.app') {
-              console.log('Fallback redirect attempt');
-              window.open('https://futanari.app/', '_self');
-            }
-          }, 1000);
-          
-          return; // Exit early to prevent further execution
-        } else {
-          console.log('PWA redirect already completed - skipping');
-        }
-      } else {
-        // If not in PWA mode, clear any old redirect flags to allow future PWA redirects
-        const redirectKey = 'pwa_redirect_completed';
-        if (localStorage.getItem(redirectKey)) {
-          console.log('Not in PWA mode - clearing redirect flag for future use');
-          localStorage.removeItem(redirectKey);
-        }
-      }
-    };
-
-    // Only run redirect check once when component first loads
-    let redirectTimer;
-    
-    // Small delay to ensure PWA detection is accurate
-    redirectTimer = setTimeout(handlePWARedirect, 500);
-
-    // Regular page initialization continues here only if no redirect
+    // Simple initialization - no redirect logic needed
     const userAgent = navigator.userAgent.toLowerCase();
     const isAndroidDevice = userAgent.includes('android');
     
     setIsAndroid(isAndroidDevice);
     console.log('Platform detected - Android:', isAndroidDevice);
-
-    // Cleanup function
-    return () => {
-      if (redirectTimer) {
-        clearTimeout(redirectTimer);
-      }
-    };
-  }, []); // Empty dependency array ensures this only runs once
+  }, []);
 
   useEffect(() => {
     // Enhanced PWA install prompt detection - only capture real events
