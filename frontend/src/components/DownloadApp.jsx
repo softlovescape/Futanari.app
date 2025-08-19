@@ -102,259 +102,313 @@ const DownloadApp = () => {
   };
 
   const handleInstall = async () => {
-    console.log('Starting PWA installation...');
+    console.log('🚀 Starting PWA installation process...');
     setIsDownloading(true);
 
     try {
-      // First, ensure service worker is ready and force PWA conditions
-      if ('serviceWorker' in navigator) {
-        await navigator.serviceWorker.ready;
-        console.log('Service worker is ready for installation');
+      // Step 1: Check if PWA is already installed
+      if (window.matchMedia('(display-mode: standalone)').matches) {
+        console.log('ℹ️ App already running as PWA');
+        setIsDownloading(false);
+        return;
       }
 
-      // Wait a moment to see if deferredPrompt becomes available
-      let attempts = 0;
-      const maxAttempts = 10;
-      
-      while (!deferredPrompt && attempts < maxAttempts) {
-        console.log(`Attempt ${attempts + 1}: Waiting for install prompt...`);
-        await new Promise(resolve => setTimeout(resolve, 300));
-        attempts++;
-      }
-
-      // Try native PWA installation if available
+      // Step 2: Try native PWA installation first
       if (deferredPrompt) {
-        console.log('Triggering native PWA installation...');
+        console.log('✅ Using native PWA installation prompt');
         
         const result = await deferredPrompt.prompt();
         const choiceResult = await deferredPrompt.userChoice;
         
+        console.log('User choice result:', choiceResult);
+        
         if (choiceResult.outcome === 'accepted') {
-          console.log('PWA installed successfully - app icon created on home screen');
+          console.log('🎉 PWA installed successfully via native prompt');
           setIsInstalled(true);
           setIsDownloading(false);
           setDeferredPrompt(null);
           
-          // Show brief success message
-          const successMessage = document.createElement('div');
-          successMessage.innerHTML = `
-            <div style="
-              position: fixed;
-              top: 50%;
-              left: 50%;
-              transform: translate(-50%, -50%);
-              background: #137333;
-              color: white;
-              padding: 20px 30px;
-              border-radius: 12px;
-              font-family: Arial, sans-serif;
-              z-index: 10000;
-              box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-              text-align: center;
-            ">
-              <div style="font-size: 40px; margin-bottom: 10px;">✅</div>
-              <div style="font-size: 16px; font-weight: bold;">App Installed!</div>
-            </div>
-          `;
-          document.body.appendChild(successMessage);
-          
-          setTimeout(() => successMessage.remove(), 1500);
+          // Show success message
+          showSuccessMessage('App Installed Successfully!', 'Check your home screen for the app icon');
           return;
         } else {
-          console.log('User declined installation');
+          console.log('❌ User declined native installation');
           setIsDownloading(false);
           return;
         }
       }
 
-      // Try to force browser to show native install prompt
-      console.log('Attempting to trigger native browser installation...');
+      // Step 3: Try to trigger browser's Add to Home Screen
+      console.log('🔍 Attempting browser-specific installation methods...');
+
+      // Check if this is a mobile browser that supports PWA installation
+      const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      const isChrome = /Chrome/.test(navigator.userAgent);
+      const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
       
-      // Force refresh service worker registration
-      if ('serviceWorker' in navigator) {
+      console.log('Browser detection:', { isMobile, isChrome, isSafari });
+
+      // For Chrome/Edge - try to manually trigger installation
+      if (isChrome && 'serviceWorker' in navigator) {
+        console.log('🔧 Trying Chrome-specific installation approach...');
+        
+        // Ensure service worker is ready
+        await navigator.serviceWorker.ready;
+        
+        // Try to get the current registration and trigger update
         const registration = await navigator.serviceWorker.getRegistration();
         if (registration) {
           await registration.update();
-          console.log('Service worker updated for installation');
-        }
-      }
-
-      // Try dispatching synthetic beforeinstallprompt event
-      const installEvent = new Event('beforeinstallprompt', { cancelable: true });
-      const dispatched = window.dispatchEvent(installEvent);
-      
-      if (dispatched) {
-        console.log('Synthetic install event dispatched');
-        
-        // Wait briefly to see if it triggers deferredPrompt
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
-        if (deferredPrompt) {
-          console.log('Synthetic event worked, triggering installation...');
-          const result = await deferredPrompt.prompt();
-          const choiceResult = await deferredPrompt.userChoice;
+          console.log('✅ Service worker updated, checking for install prompt...');
           
-          if (choiceResult.outcome === 'accepted') {
-            setIsInstalled(true);
+          // Wait briefly for browser to process
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          
+          // If still no deferredPrompt, show browser-specific instructions
+          if (!deferredPrompt) {
+            console.log('📱 Showing Chrome-specific installation instructions');
+            showChromeInstallInstructions();
             setIsDownloading(false);
-            setDeferredPrompt(null);
-            
-            const successMessage = document.createElement('div');
-            successMessage.innerHTML = `
-              <div style="
-                position: fixed;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                background: #137333;
-                color: white;
-                padding: 20px 30px;
-                border-radius: 12px;
-                font-family: Arial, sans-serif;
-                z-index: 10000;
-                box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-                text-align: center;
-              ">
-                <div style="font-size: 40px; margin-bottom: 10px;">✅</div>
-                <div style="font-size: 16px; font-weight: bold;">App Installed!</div>
-              </div>
-            `;
-            document.body.appendChild(successMessage);
-            
-            setTimeout(() => successMessage.remove(), 1500);
             return;
           }
         }
       }
 
-      // Final fallback: Try to directly access browser's install functionality
-      console.log('Trying direct browser installation methods...');
-      
-      // Check if browser supports installation and try to trigger it
-      if ('onbeforeinstallprompt' in window) {
-        console.log('Browser supports installation, trying alternative approach...');
-        
-        // Try to force trigger the event after service worker is ready
-        const forceInstallEvent = new CustomEvent('beforeinstallprompt', {
-          cancelable: true,
-          detail: { platforms: ['web'] }
-        });
-        
-        // Manually add prompt method
-        forceInstallEvent.prompt = async () => {
-          return new Promise((resolve) => {
-            // Simulate browser installation prompt
-            const confirmInstall = window.confirm('Install this app to your home screen?');
-            resolve(confirmInstall ? 'accepted' : 'dismissed');
-          });
-        };
-        
-        forceInstallEvent.userChoice = forceInstallEvent.prompt();
-        
-        try {
-          const result = await forceInstallEvent.prompt();
-          if (result === 'accepted') {
-            setIsInstalled(true);
-            setIsDownloading(false);
-            
-            const successMessage = document.createElement('div');
-            successMessage.innerHTML = `
-              <div style="
-                position: fixed;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                background: #137333;
-                color: white;
-                padding: 20px 30px;
-                border-radius: 12px;
-                font-family: Arial, sans-serif;
-                z-index: 10000;
-                box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-                text-align: center;
-              ">
-                <div style="font-size: 40px; margin-bottom: 10px;">✅</div>
-                <div style="font-size: 16px; font-weight: bold;">App Installed!</div>
-              </div>
-            `;
-            document.body.appendChild(successMessage);
-            
-            setTimeout(() => successMessage.remove(), 1500);
-            return;
-          }
-        } catch (fallbackError) {
-          console.log('Fallback installation method failed:', fallbackError);
-        }
+      // For Safari - show Safari-specific instructions
+      if (isSafari && isMobile) {
+        console.log('📱 Showing Safari-specific installation instructions');
+        showSafariInstallInstructions();
+        setIsDownloading(false);
+        return;
       }
 
-      // If all else fails, provide minimal instruction
-      console.log('Native installation not available, showing instruction');
+      // Step 4: Fallback for other browsers
+      console.log('📱 Showing general installation instructions');
+      showGeneralInstallInstructions();
       setIsDownloading(false);
-      
-      const instructionModal = document.createElement('div');
-      instructionModal.innerHTML = `
-        <div style="
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background: rgba(0,0,0,0.8);
-          z-index: 10000;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 20px;
-        ">
-          <div style="
-            background: white;
-            color: #333;
-            padding: 30px;
-            border-radius: 16px;
-            max-width: 300px;
-            width: 100%;
-            text-align: center;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-          ">
-            <div style="
-              width: 60px;
-              height: 60px;
-              background: #137333;
-              border-radius: 50%;
-              margin: 0 auto 15px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              font-size: 24px;
-              color: white;
-            ">📱</div>
-            
-            <h3 style="margin: 0 0 15px 0; font-size: 18px; color: #137333;">Add to Home Screen</h3>
-            <p style="margin: 0 0 20px 0; font-size: 14px; color: #666; line-height: 1.4;">
-              Tap your browser menu (⋮) and select "Add to Home Screen" to install the app.
-            </p>
-            
-            <button onclick="this.parentElement.parentElement.remove();" style="
-              background: #137333;
-              color: white;
-              border: none;
-              padding: 12px 24px;
-              border-radius: 8px;
-              font-size: 14px;
-              font-weight: 600;
-              cursor: pointer;
-              width: 100%;
-            ">Got it</button>
-          </div>
-        </div>
-      `;
-      
-      document.body.appendChild(instructionModal);
 
     } catch (error) {
-      console.error('Installation error:', error);
+      console.error('❌ Installation error:', error);
       setIsDownloading(false);
+      
+      // Show error message and fallback to manual instructions
+      console.log('📱 Fallback to manual installation due to error');
+      showGeneralInstallInstructions();
     }
+  };
+
+  const showSuccessMessage = (title, message) => {
+    const successMessage = document.createElement('div');
+    successMessage.innerHTML = `
+      <div style="
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: #137333;
+        color: white;
+        padding: 20px 30px;
+        border-radius: 12px;
+        font-family: Arial, sans-serif;
+        z-index: 10000;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        text-align: center;
+      ">
+        <div style="font-size: 40px; margin-bottom: 10px;">✅</div>
+        <div style="font-size: 16px; font-weight: bold; margin-bottom: 5px;">${title}</div>
+        <div style="font-size: 14px; opacity: 0.9;">${message}</div>
+      </div>
+    `;
+    document.body.appendChild(successMessage);
+    
+    setTimeout(() => successMessage.remove(), 2000);
+  };
+
+  const showChromeInstallInstructions = () => {
+    const modal = document.createElement('div');
+    modal.innerHTML = `
+      <div style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.8);
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      ">
+        <div style="
+          background: white;
+          color: #333;
+          padding: 30px;
+          border-radius: 16px;
+          max-width: 320px;
+          width: 100%;
+          text-align: center;
+          box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        ">
+          <div style="
+            width: 60px;
+            height: 60px;
+            background: #137333;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+          ">📱</div>
+          
+          <h3 style="margin: 0 0 15px 0; font-size: 18px; color: #137333;">Add to Home Screen</h3>
+          <div style="text-align: left; font-size: 14px; color: #666; margin-bottom: 20px;">
+            <div style="margin-bottom: 10px;">1. Tap the menu button (⋮) in your browser</div>
+            <div style="margin-bottom: 10px;">2. Select "Add to Home screen"</div>
+            <div>3. Tap "Add" to install the app</div>
+          </div>
+          
+          <button onclick="this.parentElement.parentElement.remove();" style="
+            background: #137333;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+          ">Got it!</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+  };
+
+  const showSafariInstallInstructions = () => {
+    const modal = document.createElement('div');
+    modal.innerHTML = `
+      <div style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.8);
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      ">
+        <div style="
+          background: white;
+          color: #333;
+          padding: 30px;
+          border-radius: 16px;
+          max-width: 320px;
+          width: 100%;
+          text-align: center;
+          box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        ">
+          <div style="
+            width: 60px;
+            height: 60px;
+            background: #137333;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+          ">🍎</div>
+          
+          <h3 style="margin: 0 0 15px 0; font-size: 18px; color: #137333;">Add to Home Screen</h3>
+          <div style="text-align: left; font-size: 14px; color: #666; margin-bottom: 20px;">
+            <div style="margin-bottom: 10px;">1. Tap the share button (📤) at the bottom</div>
+            <div style="margin-bottom: 10px;">2. Scroll down and tap "Add to Home Screen"</div>
+            <div>3. Tap "Add" to install the app</div>
+          </div>
+          
+          <button onclick="this.parentElement.parentElement.remove();" style="
+            background: #137333;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+          ">Got it!</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+  };
+
+  const showGeneralInstallInstructions = () => {
+    const modal = document.createElement('div');
+    modal.innerHTML = `
+      <div style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.8);
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      ">
+        <div style="
+          background: white;
+          color: #333;
+          padding: 30px;
+          border-radius: 16px;
+          max-width: 320px;
+          width: 100%;
+          text-align: center;
+          box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        ">
+          <div style="
+            width: 60px;
+            height: 60px;
+            background: #137333;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+          ">📱</div>
+          
+          <h3 style="margin: 0 0 15px 0; font-size: 18px; color: #137333;">Add to Home Screen</h3>
+          <p style="margin: 0 0 20px 0; font-size: 14px; color: #666; line-height: 1.4;">
+            Use your browser's "Add to Home Screen" option to install this app to your device.
+          </p>
+          
+          <button onclick="this.parentElement.parentElement.remove();" style="
+            background: #137333;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+          ">Got it!</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
   };
 
   const openModal = (src, alt) => {
