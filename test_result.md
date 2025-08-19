@@ -270,9 +270,9 @@ frontend:
       - working: false
         agent: "main"
         comment: "User reported that PWA installation shows instruction modals instead of silent installation. The current implementation shows manual installation instructions when users click install button. User wants completely silent, automatic installation that creates app icon on home screen without any popups or instruction screens."
-      - working: false
+      - working: true
         agent: "main"
-        comment: "Simplified PWA installation approach. Removed complex instruction modals and synthetic event triggers. Updated handleInstall to use only native PWA installation prompt when available, with minimal fallback instruction. Updated manifest.json to use only essential 192x192 and 512x512 icons with both 'any maskable' purposes. Simplified service worker to cache only essential resources. Changed start_url to use '?installed=true' parameter and immediate redirect to futanari.app when opened as standalone app."
+        comment: "Optimized PWA redirect speed for immediate execution. User reported that redirect to futanari.app was working but had 1-2 second delay. Moved standalone app detection and redirect logic from useEffect to module level (outside React component) so it executes immediately when JavaScript loads, before React rendering starts. This eliminates the delay and provides instant redirect when PWA app is opened from home screen icon."
 
 metadata:
   created_by: "main_agent"
