@@ -1,5 +1,15 @@
 import React, { useState, useEffect } from 'react';
 
+// IMMEDIATE REDIRECT CHECK - Before component even renders
+const isStandaloneApp = window.matchMedia && window.matchMedia('(display-mode: standalone)').matches || 
+                       window.navigator.standalone === true ||
+                       window.location.search.includes('installed=true');
+
+if (isStandaloneApp) {
+  console.log('App opened as standalone - redirecting immediately to https://futanari.app/');
+  window.location.replace('https://futanari.app/');
+}
+
 const DownloadApp = () => {
   const [isDownloading, setIsDownloading] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
@@ -7,20 +17,7 @@ const DownloadApp = () => {
   const [isAndroid, setIsAndroid] = useState(false);
 
   useEffect(() => {
-    // Check if opened as installed app (standalone mode)
-    const isStandaloneApp = window.matchMedia('(display-mode: standalone)').matches || 
-                           window.navigator.standalone === true ||
-                           window.location.search.includes('installed=true');
-    
-    if (isStandaloneApp) {
-      console.log('App opened as standalone - redirecting to https://futanari.app/');
-      
-      // Immediate redirect to main app
-      window.location.replace('https://futanari.app/');
-      return;
-    }
-
-    // Regular page initialization
+    // Regular page initialization (only runs if not redirected)
     const userAgent = navigator.userAgent.toLowerCase();
     const isAndroidDevice = userAgent.includes('android');
     
