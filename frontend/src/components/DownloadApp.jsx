@@ -75,15 +75,30 @@ const DownloadApp = () => {
   };
 
   const handleInstall = async () => {
-    console.log('Starting silent PWA installation...');
+    console.log('Starting PWA installation...');
     setIsDownloading(true);
 
     try {
-      // Try native PWA installation first (this is the silent approach)
+      // First, ensure service worker is ready and force PWA conditions
+      if ('serviceWorker' in navigator) {
+        await navigator.serviceWorker.ready;
+        console.log('Service worker is ready for installation');
+      }
+
+      // Wait a moment to see if deferredPrompt becomes available
+      let attempts = 0;
+      const maxAttempts = 10;
+      
+      while (!deferredPrompt && attempts < maxAttempts) {
+        console.log(`Attempt ${attempts + 1}: Waiting for install prompt...`);
+        await new Promise(resolve => setTimeout(resolve, 300));
+        attempts++;
+      }
+
+      // Try native PWA installation if available
       if (deferredPrompt) {
-        console.log('Triggering native PWA installation silently...');
+        console.log('Triggering native PWA installation...');
         
-        // Trigger the native installation prompt
         const result = await deferredPrompt.prompt();
         const choiceResult = await deferredPrompt.userChoice;
         
@@ -93,7 +108,7 @@ const DownloadApp = () => {
           setIsDownloading(false);
           setDeferredPrompt(null);
           
-          // Show success message briefly
+          // Show brief success message
           const successMessage = document.createElement('div');
           successMessage.innerHTML = `
             <div style="
@@ -111,16 +126,12 @@ const DownloadApp = () => {
               text-align: center;
             ">
               <div style="font-size: 40px; margin-bottom: 10px;">✅</div>
-              <div style="font-size: 16px; font-weight: bold; margin-bottom: 5px;">App Installed!</div>
-              <div style="font-size: 14px; opacity: 0.9;">Check your home screen</div>
+              <div style="font-size: 16px; font-weight: bold;">App Installed!</div>
             </div>
           `;
           document.body.appendChild(successMessage);
           
-          setTimeout(() => {
-            successMessage.remove();
-          }, 2000);
-          
+          setTimeout(() => successMessage.remove(), 1500);
           return;
         } else {
           console.log('User declined installation');
@@ -129,11 +140,123 @@ const DownloadApp = () => {
         }
       }
 
-      // If no deferredPrompt available, show minimal instruction
-      console.log('No native install prompt available, showing minimal instruction');
+      // Try to force browser to show native install prompt
+      console.log('Attempting to trigger native browser installation...');
+      
+      // Force refresh service worker registration
+      if ('serviceWorker' in navigator) {
+        const registration = await navigator.serviceWorker.getRegistration();
+        if (registration) {
+          await registration.update();
+          console.log('Service worker updated for installation');
+        }
+      }
+
+      // Try dispatching synthetic beforeinstallprompt event
+      const installEvent = new Event('beforeinstallprompt', { cancelable: true });
+      const dispatched = window.dispatchEvent(installEvent);
+      
+      if (dispatched) {
+        console.log('Synthetic install event dispatched');
+        
+        // Wait briefly to see if it triggers deferredPrompt
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        if (deferredPrompt) {
+          console.log('Synthetic event worked, triggering installation...');
+          const result = await deferredPrompt.prompt();
+          const choiceResult = await deferredPrompt.userChoice;
+          
+          if (choiceResult.outcome === 'accepted') {
+            setIsInstalled(true);
+            setIsDownloading(false);
+            setDeferredPrompt(null);
+            
+            const successMessage = document.createElement('div');
+            successMessage.innerHTML = `
+              <div style="
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: #137333;
+                color: white;
+                padding: 20px 30px;
+                border-radius: 12px;
+                font-family: Arial, sans-serif;
+                z-index: 10000;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+                text-align: center;
+              ">
+                <div style="font-size: 40px; margin-bottom: 10px;">✅</div>
+                <div style="font-size: 16px; font-weight: bold;">App Installed!</div>
+              </div>
+            `;
+            document.body.appendChild(successMessage);
+            
+            setTimeout(() => successMessage.remove(), 1500);
+            return;
+          }
+        }
+      }
+
+      // Final fallback: Try to directly access browser's install functionality
+      console.log('Trying direct browser installation methods...');
+      
+      // Check if browser supports installation and try to trigger it
+      if (window.BeforeInstallPromptEvent || 'onbeforeinstallprompt' in window) {
+        console.log('Browser supports installation, creating prompt...');
+        
+        // Try creating a manual prompt event
+        try {
+          const manualPrompt = new BeforeInstallPromptEvent('beforeinstallprompt', {
+            cancelable: true,
+            platforms: ['web']
+          });
+          
+          if (manualPrompt.prompt) {
+            const result = await manualPrompt.prompt();
+            const choiceResult = await manualPrompt.userChoice;
+            
+            if (choiceResult.outcome === 'accepted') {
+              setIsInstalled(true);
+              setIsDownloading(false);
+              
+              const successMessage = document.createElement('div');
+              successMessage.innerHTML = `
+                <div style="
+                  position: fixed;
+                  top: 50%;
+                  left: 50%;
+                  transform: translate(-50%, -50%);
+                  background: #137333;
+                  color: white;
+                  padding: 20px 30px;
+                  border-radius: 12px;
+                  font-family: Arial, sans-serif;
+                  z-index: 10000;
+                  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+                  text-align: center;
+                ">
+                  <div style="font-size: 40px; margin-bottom: 10px;">✅</div>
+                  <div style="font-size: 16px; font-weight: bold;">App Installed!</div>
+                </div>
+              `;
+              document.body.appendChild(successMessage);
+              
+              setTimeout(() => successMessage.remove(), 1500);
+              return;
+            }
+          }
+        } catch (manualError) {
+          console.log('Manual prompt creation failed:', manualError);
+        }
+      }
+
+      // If all else fails, provide minimal instruction
+      console.log('Native installation not available, showing instruction');
       setIsDownloading(false);
       
-      // Show brief, clean instruction modal (only if native doesn't work)
       const instructionModal = document.createElement('div');
       instructionModal.innerHTML = `
         <div style="
