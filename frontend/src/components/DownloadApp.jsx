@@ -1,57 +1,5 @@
 import React, { useState, useEffect } from 'react';
 
-// IMMEDIATE REDIRECT CHECK - Before component even renders
-// Only redirect if we're actually in standalone mode (real PWA) with installed parameter
-const isActuallyStandalone = window.matchMedia && window.matchMedia('(display-mode: standalone)').matches;
-const isMobileStandalone = window.navigator.standalone === true; // iOS Safari
-const hasInstalledParam = window.location.search.includes('installed=true');
-
-// Combined check: must be truly standalone AND have installed param
-const isFromInstalledPWA = (isActuallyStandalone || isMobileStandalone) && hasInstalledParam;
-
-// Add a check to prevent redirect loops
-const hasRedirectFlag = sessionStorage.getItem('pwa_redirected');
-const redirectAttempts = parseInt(sessionStorage.getItem('redirect_attempts') || '0');
-
-console.log('PWA Redirect Debug:', {
-  isActuallyStandalone,
-  isMobileStandalone,
-  hasInstalledParam,
-  isFromInstalledPWA,
-  hasRedirectFlag,
-  redirectAttempts,
-  currentURL: window.location.href
-});
-
-if (isFromInstalledPWA && !hasRedirectFlag && redirectAttempts < 3) {
-  console.log('✅ PWA opened as standalone with installed param - redirecting to https://futanari.app/');
-  
-  // Increment redirect attempts counter
-  sessionStorage.setItem('redirect_attempts', (redirectAttempts + 1).toString());
-  
-  // Set flag to prevent immediate redirect loops
-  sessionStorage.setItem('pwa_redirected', 'true');
-  
-  // Clear flags after a delay to reset for next session
-  setTimeout(() => {
-    sessionStorage.removeItem('pwa_redirected');
-    sessionStorage.removeItem('redirect_attempts');
-  }, 5000);
-  
-  // Redirect to main app
-  window.location.replace('https://futanari.app/');
-} else if (hasRedirectFlag) {
-  console.log('🛡️ Redirect loop prevention active - skipping redirect');
-} else if (redirectAttempts >= 3) {
-  console.log('🚫 Maximum redirect attempts reached - stopping to prevent loops');
-  sessionStorage.removeItem('redirect_attempts');
-  sessionStorage.removeItem('pwa_redirected');
-} else if (!isFromInstalledPWA && hasInstalledParam) {
-  console.log('ℹ️ Has installed param but not in standalone mode - normal page load');
-} else {
-  console.log('ℹ️ Regular page load - no redirect needed');
-}
-
 const DownloadApp = () => {
   const [isDownloading, setIsDownloading] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
