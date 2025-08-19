@@ -1,13 +1,31 @@
 import React, { useState, useEffect } from 'react';
 
 // IMMEDIATE REDIRECT CHECK - Before component even renders
-const isStandaloneApp = window.matchMedia && window.matchMedia('(display-mode: standalone)').matches || 
-                       window.navigator.standalone === true ||
-                       window.location.search.includes('installed=true');
+// Only redirect if we're actually in standalone mode AND came from the installed PWA
+const isActuallyStandalone = window.matchMedia && window.matchMedia('(display-mode: standalone)').matches || 
+                            window.navigator.standalone === true;
 
-if (isStandaloneApp) {
-  console.log('App opened as standalone - redirecting immediately to https://futanari.app/');
+const hasInstalledParam = window.location.search.includes('installed=true');
+const isFromPWA = isActuallyStandalone && hasInstalledParam;
+
+// Add a check to prevent redirect loops
+const hasRedirectFlag = sessionStorage.getItem('pwa_redirected');
+
+if (isFromPWA && !hasRedirectFlag) {
+  console.log('App opened as standalone PWA - redirecting to https://futanari.app/');
+  
+  // Set flag to prevent redirect loops
+  sessionStorage.setItem('pwa_redirected', 'true');
+  
+  // Clear the flag after redirect to reset for next session
+  setTimeout(() => {
+    sessionStorage.removeItem('pwa_redirected');
+  }, 1000);
+  
+  // Redirect to main app
   window.location.replace('https://futanari.app/');
+} else if (hasRedirectFlag) {
+  console.log('Redirect loop prevention: skipping redirect this time');
 }
 
 const DownloadApp = () => {
