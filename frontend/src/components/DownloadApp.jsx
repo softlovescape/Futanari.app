@@ -12,7 +12,7 @@ const DownloadApp = () => {
       // Check if this is a PWA running in standalone mode
       const isStandaloneMode = window.matchMedia('(display-mode: standalone)').matches;
       const isMobilePWA = window.navigator.standalone === true;
-      const hasInstalledParam = window.location.search.includes('installed=true');
+      const hasInstalledParam = window.location.search.includes('source=pwa');
       
       // Only redirect if truly running as PWA AND has installed parameter
       const shouldRedirect = (isStandaloneMode || isMobilePWA) && hasInstalledParam;
