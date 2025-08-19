@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Futanari Lovescape</title>
+    <link rel="icon" href="/app-icon.png">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #137333, #34a853);
+            color: white;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+        }
+        .logo {
+            width: 80px;
+            height: 80px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        .title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-bottom: 30px;
+        }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <img src="/app-icon.png" alt="App Icon" class="logo">
+    <div class="title">Futanari Lovescape</div>
+    <div class="subtitle">Opening app...</div>
+    <div class="spinner"></div>
+
+    <script>
+        // Immediate redirect to the main application
+        console.log('PWA app opened - redirecting to futanari.app');
+        
+        // Multiple redirect methods for maximum compatibility
+        try {
+            // Method 1: Direct replace (most reliable)
+            window.location.replace('https://futanari.app/');
+        } catch (e) {
+            console.log('Replace failed, trying href method');
+            // Method 2: Fallback to href
+            window.location.href = 'https://futanari.app/';
+        }
+        
+        // Method 3: Ultimate fallback with window.open
+        setTimeout(() => {
+            if (window.location.hostname !== 'futanari.app') {
+                console.log('Using window.open fallback');
+                window.open('https://futanari.app/', '_self');
+            }
+        }, 1000);
+        
+        // Method 4: If nothing else works, show manual redirect
+        setTimeout(() => {
+            if (window.location.hostname !== 'futanari.app') {
+                document.body.innerHTML = `
+                    <div style="text-align: center; padding: 20px;">
+                        <img src="/app-icon.png" alt="App Icon" style="width: 80px; height: 80px; border-radius: 16px; margin-bottom: 20px;">
+                        <h2>Futanari Lovescape</h2>
+                        <p>Click the link below to open the app:</p>
+                        <a href="https://futanari.app/" style="
+                            display: inline-block;
+                            background: white;
+                            color: #137333;
+                            padding: 12px 24px;
+                            text-decoration: none;
+                            border-radius: 8px;
+                            font-weight: 600;
+                            margin-top: 20px;
+                        ">Open Futanari App</a>
+                    </div>
+                `;
+            }
+        }, 3000);
+    </script>
+</body>
+</html>
