@@ -66,49 +66,113 @@
             // Ignore storage errors
         }
         
-        // Immediate redirect to the main application
-        console.log('PWA app opened - redirecting to futanari.app');
+        console.log('PWA app opened - forcing redirect to futanari.app');
         
-        // Multiple redirect methods for maximum compatibility
-        try {
-            // Method 1: Direct replace (most reliable)
-            window.location.replace('https://futanari.app/');
-        } catch (e) {
-            console.log('Replace failed, trying href method');
-            // Method 2: Fallback to href
-            window.location.href = 'https://futanari.app/';
-        }
-        
-        // Method 3: Ultimate fallback with window.open
-        setTimeout(() => {
-            if (window.location.hostname !== 'futanari.app') {
-                console.log('Using window.open fallback');
-                window.open('https://futanari.app/', '_self');
+        // Immediate redirect attempts with multiple methods
+        const redirectToApp = () => {
+            const targetUrl = 'https://futanari.app/';
+            
+            // Method 1: window.location.replace (most reliable for PWA)
+            try {
+                console.log('Attempting window.location.replace...');
+                window.location.replace(targetUrl);
+                return;
+            } catch (e) {
+                console.log('Replace method failed:', e);
             }
-        }, 1000);
+            
+            // Method 2: window.location.href
+            try {
+                console.log('Attempting window.location.href...');
+                window.location.href = targetUrl;
+                return;
+            } catch (e) {
+                console.log('Href method failed:', e);
+            }
+            
+            // Method 3: window.open with _self
+            try {
+                console.log('Attempting window.open...');
+                window.open(targetUrl, '_self');
+                return;
+            } catch (e) {
+                console.log('Window.open method failed:', e);
+            }
+            
+            // Method 4: Try to change location directly
+            try {
+                console.log('Attempting direct location change...');
+                document.location = targetUrl;
+                return;
+            } catch (e) {
+                console.log('Direct location method failed:', e);
+            }
+        };
         
-        // Method 4: If nothing else works, show manual redirect
-        setTimeout(() => {
+        // Execute redirect immediately
+        redirectToApp();
+        
+        // Also try after DOM is fully loaded
+        document.addEventListener('DOMContentLoaded', redirectToApp);
+        
+        // Also try after window is fully loaded
+        window.addEventListener('load', redirectToApp);
+        
+        // Aggressive retry mechanism
+        let retryCount = 0;
+        const maxRetries = 10;
+        
+        const retryRedirect = () => {
+            if (window.location.hostname !== 'futanari.app' && retryCount < maxRetries) {
+                retryCount++;
+                console.log(`Retry attempt ${retryCount} - forcing redirect...`);
+                redirectToApp();
+                
+                // Schedule next retry
+                setTimeout(retryRedirect, 500 * retryCount); // Increasing delays
+            } else if (retryCount >= maxRetries) {
+                console.log('Max retries reached - showing manual redirect');
+                showManualRedirect();
+            }
+        };
+        
+        // Start retry mechanism
+        setTimeout(retryRedirect, 100);
+        
+        // Show manual redirect after 2 seconds if automatic redirect fails
+        const showManualRedirect = () => {
             if (window.location.hostname !== 'futanari.app') {
                 document.body.innerHTML = `
-                    <div style="text-align: center; padding: 20px;">
-                        <img src="/app-icon.png" alt="App Icon" style="width: 80px; height: 80px; border-radius: 16px; margin-bottom: 20px;">
-                        <h2>Futanari Lovescape</h2>
-                        <p>Click the link below to open the app:</p>
-                        <a href="https://futanari.app/" style="
+                    <div style="text-align: center; padding: 20px; background: linear-gradient(135deg, #137333, #34a853); color: white; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                        <img src="/app-icon.png" alt="App Icon" style="width: 80px; height: 80px; border-radius: 16px; margin-bottom: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.3);">
+                        <h2 style="margin: 0 0 15px 0; font-size: 24px; font-weight: 600;">Futanari Lovescape</h2>
+                        <p style="margin: 0 0 20px 0; font-size: 16px; opacity: 0.9;">Tap the button below to open the app:</p>
+                        <a href="https://futanari.app/" onclick="window.open('https://futanari.app/', '_self'); return true;" style="
                             display: inline-block;
                             background: white;
                             color: #137333;
-                            padding: 12px 24px;
+                            padding: 15px 30px;
                             text-decoration: none;
-                            border-radius: 8px;
+                            border-radius: 25px;
+                            font-size: 16px;
                             font-weight: 600;
                             margin-top: 20px;
-                        ">Open Futanari App</a>
+                            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+                            transition: transform 0.2s;
+                        " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                            🚀 Open Futanari App
+                        </a>
+                        <p style="margin: 20px 0 0 0; font-size: 12px; opacity: 0.7;">
+                            If the button doesn't work, copy this URL:<br>
+                            <span style="background: rgba(255,255,255,0.2); padding: 5px 10px; border-radius: 5px; font-family: monospace;">https://futanari.app/</span>
+                        </p>
                     </div>
                 `;
             }
-        }, 3000);
+        };
+        
+        // Final fallback after 3 seconds
+        setTimeout(showManualRedirect, 3000);
     </script>
 </body>
 </html>
