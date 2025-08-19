@@ -1,4 +1,4 @@
-const CACHE_NAME = 'futanari-app-v9';
+const CACHE_NAME = 'futanari-app-v10';
 const urlsToCache = [
   '/',
   '/download-app',
