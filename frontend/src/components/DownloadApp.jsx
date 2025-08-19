@@ -24,12 +24,17 @@ const DownloadApp = () => {
     setIsAndroid(isAndroidDevice);
     console.log('Platform detected - Android:', isAndroidDevice);
 
-    // Enhanced PWA install prompt detection with aggressive triggering
+    // Enhanced PWA install prompt detection - only capture real events
     const handleBeforeInstallPrompt = (e) => {
-      console.log('🎉 PWA install prompt detected and captured!');
-      e.preventDefault();
-      setDeferredPrompt(e);
-      console.log('✅ Deferred prompt stored successfully');
+      // Only capture real beforeinstallprompt events that have the prompt method
+      if (e.prompt && typeof e.prompt === 'function') {
+        console.log('🎉 Real PWA install prompt detected and captured!');
+        e.preventDefault();
+        setDeferredPrompt(e);
+        console.log('✅ Real deferred prompt stored successfully');
+      } else {
+        console.log('⚠️ Synthetic beforeinstallprompt event ignored (no prompt method)');
+      }
     };
 
     const handleAppInstalled = () => {
