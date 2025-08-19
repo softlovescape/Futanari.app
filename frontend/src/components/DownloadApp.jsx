@@ -131,7 +131,7 @@ const DownloadApp = () => {
       }
 
       // Step 2: Try native PWA installation first
-      if (deferredPrompt) {
+      if (deferredPrompt && typeof deferredPrompt.prompt === 'function') {
         console.log('✅ Using native PWA installation prompt');
         
         const result = await deferredPrompt.prompt();
@@ -153,6 +153,8 @@ const DownloadApp = () => {
           setIsDownloading(false);
           return;
         }
+      } else if (deferredPrompt) {
+        console.log('⚠️ deferredPrompt exists but lacks prompt() method - likely synthetic event');
       }
 
       // Step 3: Try to trigger browser's Add to Home Screen
