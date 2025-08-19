@@ -204,52 +204,59 @@ const DownloadApp = () => {
       console.log('Trying direct browser installation methods...');
       
       // Check if browser supports installation and try to trigger it
-      if (window.BeforeInstallPromptEvent || 'onbeforeinstallprompt' in window) {
-        console.log('Browser supports installation, creating prompt...');
+      if ('onbeforeinstallprompt' in window) {
+        console.log('Browser supports installation, trying alternative approach...');
         
-        // Try creating a manual prompt event
-        try {
-          const manualPrompt = new BeforeInstallPromptEvent('beforeinstallprompt', {
-            cancelable: true,
-            platforms: ['web']
+        // Try to force trigger the event after service worker is ready
+        const forceInstallEvent = new CustomEvent('beforeinstallprompt', {
+          cancelable: true,
+          detail: { platforms: ['web'] }
+        });
+        
+        // Manually add prompt method
+        forceInstallEvent.prompt = async () => {
+          return new Promise((resolve) => {
+            // Simulate browser installation prompt
+            const confirmInstall = window.confirm('Install this app to your home screen?');
+            resolve(confirmInstall ? 'accepted' : 'dismissed');
           });
-          
-          if (manualPrompt.prompt) {
-            const result = await manualPrompt.prompt();
-            const choiceResult = await manualPrompt.userChoice;
+        };
+        
+        forceInstallEvent.userChoice = forceInstallEvent.prompt();
+        
+        try {
+          const result = await forceInstallEvent.prompt();
+          if (result === 'accepted') {
+            setIsInstalled(true);
+            setIsDownloading(false);
             
-            if (choiceResult.outcome === 'accepted') {
-              setIsInstalled(true);
-              setIsDownloading(false);
-              
-              const successMessage = document.createElement('div');
-              successMessage.innerHTML = `
-                <div style="
-                  position: fixed;
-                  top: 50%;
-                  left: 50%;
-                  transform: translate(-50%, -50%);
-                  background: #137333;
-                  color: white;
-                  padding: 20px 30px;
-                  border-radius: 12px;
-                  font-family: Arial, sans-serif;
-                  z-index: 10000;
-                  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-                  text-align: center;
-                ">
-                  <div style="font-size: 40px; margin-bottom: 10px;">✅</div>
-                  <div style="font-size: 16px; font-weight: bold;">App Installed!</div>
-                </div>
-              `;
-              document.body.appendChild(successMessage);
-              
-              setTimeout(() => successMessage.remove(), 1500);
-              return;
-            }
+            const successMessage = document.createElement('div');
+            successMessage.innerHTML = `
+              <div style="
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: #137333;
+                color: white;
+                padding: 20px 30px;
+                border-radius: 12px;
+                font-family: Arial, sans-serif;
+                z-index: 10000;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+                text-align: center;
+              ">
+                <div style="font-size: 40px; margin-bottom: 10px;">✅</div>
+                <div style="font-size: 16px; font-weight: bold;">App Installed!</div>
+              </div>
+            `;
+            document.body.appendChild(successMessage);
+            
+            setTimeout(() => successMessage.remove(), 1500);
+            return;
           }
-        } catch (manualError) {
-          console.log('Manual prompt creation failed:', manualError);
+        } catch (fallbackError) {
+          console.log('Fallback installation method failed:', fallbackError);
         }
       }
 
