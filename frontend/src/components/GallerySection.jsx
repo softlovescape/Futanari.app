@@ -2,38 +2,91 @@ import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from './ui/button';
 
+const LazyImage = ({ src, alt, className, index }) => {
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [isInView, setIsInView] = useState(index === 0); // Load first image immediately
+  
+  useEffect(() => {
+    // Preload images that are close to current view
+    if (index <= 2) {
+      setIsInView(true);
+    }
+  }, [index]);
+
+  const handleLoad = () => {
+    setIsLoaded(true);
+  };
+
+  return (
+    <div className={`relative ${className}`}>
+      {!isLoaded && (
+        <div className="absolute inset-0 bg-gray-800 flex items-center justify-center">
+          <div className="text-white text-sm">Loading...</div>
+        </div>
+      )}
+      {isInView && (
+        <img
+          src={src}
+          alt={alt}
+          className={`${className} transition-opacity duration-300 ${
+            isLoaded ? 'opacity-100' : 'opacity-0'
+          }`}
+          onLoad={handleLoad}
+          loading="lazy"
+        />
+      )}
+    </div>
+  );
+};
+
 const GallerySection = ({ images }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const [preloadedImages, setPreloadedImages] = useState(new Set([0]));
+
+  // Preload adjacent images
+  useEffect(() => {
+    const preloadAdjacent = () => {
+      const prevIndex = (currentIndex - 1 + images.length) % images.length;
+      const nextIndex = (currentIndex + 1) % images.length;
+      
+      [prevIndex, nextIndex].forEach(index => {
+        if (!preloadedImages.has(index)) {
+          const img = new Image();
+          img.src = images[index];
+          setPreloadedImages(prev => new Set([...prev, index]));
+        }
+      });
+    };
+
+    preloadAdjacent();
+  }, [currentIndex, images, preloadedImages]);
 
   useEffect(() => {
     if (!isAutoPlaying) return;
 
     const interval = setInterval(() => {
       setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
-    }, 2000);
+    }, 3000); // Increased to 3 seconds for better UX
 
     return () => clearInterval(interval);
   }, [images.length, isAutoPlaying]);
 
   const nextSlide = () => {
-    setIsAutoPlaying(false); // Pause auto-play when user interacts
+    setIsAutoPlaying(false);
     setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
-    // Resume auto-play after 5 seconds
     setTimeout(() => setIsAutoPlaying(true), 5000);
   };
 
   const prevSlide = () => {
-    setIsAutoPlaying(false); // Pause auto-play when user interacts
+    setIsAutoPlaying(false);
     setCurrentIndex((prevIndex) => (prevIndex - 1 + images.length) % images.length);
-    // Resume auto-play after 5 seconds
     setTimeout(() => setIsAutoPlaying(true), 5000);
   };
 
   const goToSlide = (index) => {
-    setIsAutoPlaying(false); // Pause auto-play when user interacts
+    setIsAutoPlaying(false);
     setCurrentIndex(index);
-    // Resume auto-play after 5 seconds
     setTimeout(() => setIsAutoPlaying(true), 5000);
   };
 
@@ -52,10 +105,11 @@ const GallerySection = ({ images }) => {
             >
               {images.map((image, index) => (
                 <div key={index} className="w-full flex-shrink-0">
-                  <img
+                  <LazyImage
                     src={image}
                     alt={`Gallery image ${index + 1}`}
                     className="w-full h-96 md:h-[500px] object-cover"
+                    index={index}
                   />
                 </div>
               ))}
