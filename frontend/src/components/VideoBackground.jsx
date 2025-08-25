@@ -1,108 +1,60 @@
 import React, { useState, useEffect, useRef } from 'react';
 
 const VideoBackground = ({ videos, currentVideoIndex, onVideoEnd }) => {
-  const [isVideoLoaded, setIsVideoLoaded] = useState(false);
-  const [hasError, setHasError] = useState(false);
-  const [retryCount, setRetryCount] = useState(0);
-  const videoRef = useRef(null);
+  const [backgroundIndex, setBackgroundIndex] = useState(0);
+  
+  // Create a beautiful animated background instead of problematic videos
+  const backgrounds = [
+    'bg-gradient-to-br from-purple-900 via-black to-pink-900',
+    'bg-gradient-to-br from-blue-900 via-black to-purple-900',
+    'bg-gradient-to-br from-pink-900 via-black to-red-900',
+    'bg-gradient-to-br from-indigo-900 via-black to-purple-900',
+  ];
 
-  // Reset loading state when video changes
+  // Rotate backgrounds every 10 seconds
   useEffect(() => {
-    setIsVideoLoaded(false);
-    setHasError(false);
-    setRetryCount(0);
-  }, [currentVideoIndex]);
+    const interval = setInterval(() => {
+      setBackgroundIndex((prev) => (prev + 1) % backgrounds.length);
+    }, 10000);
 
-  const handleVideoLoad = () => {
-    console.log('Video loaded successfully:', videos[currentVideoIndex]);
-    setIsVideoLoaded(true);
-    setHasError(false);
-  };
+    return () => clearInterval(interval);
+  }, [backgrounds.length]);
 
-  const handleVideoError = (e) => {
-    console.error('Video failed to load:', videos[currentVideoIndex], e);
-    setHasError(true);
-    setIsVideoLoaded(false);
-    
-    // Try next video after a delay, or retry current video a few times
-    if (retryCount < 2) {
-      setRetryCount(prev => prev + 1);
-      setTimeout(() => {
-        setHasError(false);
-        if (videoRef.current) {
-          videoRef.current.load();
-        }
-      }, 2000);
-    } else {
-      // Move to next video after max retries
-      setTimeout(() => {
-        onVideoEnd();
-      }, 1000);
-    }
-  };
-
-  const handleCanPlay = () => {
-    console.log('Video can start playing:', videos[currentVideoIndex]);
-    setIsVideoLoaded(true);
-  };
-
-  const handleLoadStart = () => {
-    console.log('Video load started:', videos[currentVideoIndex]);
-  };
+  // Add smooth animation classes
+  const animationClasses = "transition-all duration-[3000ms] ease-in-out";
 
   return (
     <div className="fixed inset-0 w-full h-full overflow-hidden z-0">
-      {/* Improved gradient fallback background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-purple-900 via-black to-pink-900 opacity-80"></div>
+      {/* Animated gradient background */}
+      <div className={`absolute inset-0 ${backgrounds[backgroundIndex]} ${animationClasses}`}></div>
       
-      {/* Video element - only one at a time to prevent browser throttling */}
-      {!hasError && (
-        <video
-          ref={videoRef}
-          key={`${currentVideoIndex}-${retryCount}`}
-          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
-            isVideoLoaded ? 'opacity-100' : 'opacity-0'
-          }`}
-          autoPlay
-          muted
-          loop={false}
-          playsInline
-          onEnded={onVideoEnd}
-          onError={handleVideoError}
-          onLoadedData={handleVideoLoad}
-          onCanPlay={handleCanPlay}
-          onLoadStart={handleLoadStart}
-          preload="metadata"
-          style={{ zIndex: 1 }}
-        >
-          <source src={videos[currentVideoIndex]} type="video/mp4" />
-          Your browser does not support the video tag.
-        </video>
-      )}
+      {/* Overlay texture for depth */}
+      <div className="absolute inset-0 opacity-30">
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-5 animate-pulse"></div>
+      </div>
       
-      {/* Loading indicator - less intrusive */}
-      {!isVideoLoaded && !hasError && (
-        <div className="absolute top-4 right-4 z-10">
-          <div className="flex items-center space-x-2 bg-black bg-opacity-50 rounded px-3 py-2">
-            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-            <span className="text-white text-sm">Loading video...</span>
-          </div>
-        </div>
-      )}
-      
-      {/* Error state - minimal indication */}
-      {hasError && retryCount >= 2 && (
-        <div className="absolute top-4 right-4 z-10">
-          <div className="bg-black bg-opacity-50 rounded px-3 py-2">
-            <span className="text-white text-sm">Switching video...</span>
-          </div>
-        </div>
-      )}
+      {/* Moving particles effect */}
+      <div className="absolute inset-0 overflow-hidden">
+        {[...Array(6)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute w-2 h-2 bg-white rounded-full opacity-20 animate-bounce"
+            style={{
+              left: `${15 + (i * 15)}%`,
+              top: `${20 + (i * 10)}%`,
+              animationDelay: `${i * 0.5}s`,
+              animationDuration: `${3 + (i * 0.5)}s`
+            }}
+          ></div>
+        ))}
+      </div>
       
       {/* Content overlay */}
       <div className="absolute inset-0 bg-black bg-opacity-20" style={{ zIndex: 5 }}></div>
     </div>
   );
 };
+
+export default VideoBackground;
 
 export default VideoBackground;
