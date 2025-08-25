@@ -3,60 +3,13 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from './ui/button';
 
 const LazyImage = ({ src, alt, className, index }) => {
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [hasError, setHasError] = useState(false);
-  
-  const handleLoad = () => {
-    setIsLoaded(true);
-    setHasError(false);
-  };
-
-  const handleError = (e) => {
-    console.warn('Image failed to load:', src);
-    setHasError(true);
-  };
-
   return (
-    <div className={`relative ${className}`}>
-      <img
-        src={src}
-        alt={alt}
-        className={`${className} transition-opacity duration-500 ${
-          isLoaded && !hasError ? 'opacity-100' : 'opacity-0'
-        }`}
-        onLoad={handleLoad}
-        onError={handleError}
-        loading={index === 0 ? "eager" : "lazy"}
-      />
-      
-      {/* Loading state */}
-      {!isLoaded && !hasError && (
-        <div className="absolute inset-0 bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mb-2 mx-auto"></div>
-            <div className="text-white text-sm">Loading...</div>
-          </div>
-        </div>
-      )}
-      
-      {/* Error state with retry */}
-      {hasError && (
-        <div className="absolute inset-0 bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center">
-          <div className="text-white text-sm text-center">
-            <div className="mb-2">Image loading...</div>
-            <button 
-              onClick={() => {
-                setHasError(false);
-                setIsLoaded(false);
-              }}
-              className="text-xs bg-white bg-opacity-20 px-2 py-1 rounded"
-            >
-              Retry
-            </button>
-          </div>
-        </div>
-      )}
-    </div>
+    <img
+      src={src}
+      alt={alt}
+      className={className}
+      loading={index === 0 ? "eager" : "lazy"}
+    />
   );
 };
 
