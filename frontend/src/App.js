@@ -107,7 +107,7 @@ const Home = () => {
         <GallerySection images={galleryImages} />
         <CTABanner />
         
-        {/* Video Cover Section */}
+        {/* Inline video section - optimize loading */}
         <section className="relative z-10 py-0">
           <div className="h-96 md:h-[500px] overflow-hidden">
             <video
@@ -116,6 +116,7 @@ const Home = () => {
               muted
               loop
               playsInline
+              preload="none" // Load only when in view
             >
               <source src="https://customer-assets.emergentagent.com/job_86210f7e-097f-4a1d-b538-652380944388/artifacts/v6lxf1u9_Futanari%207-realistic.mp4" type="video/mp4" />
             </video>
