@@ -1,11 +1,33 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 
 const VideoBackground = ({ videos, currentVideoIndex, onVideoEnd }) => {
   const videoRef = useRef(null);
 
+  useEffect(() => {
+    if (videoRef.current) {
+      // Force video to play immediately
+      const playPromise = videoRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(error => {
+          console.warn('Autoplay failed, trying next video');
+          onVideoEnd();
+        });
+      }
+    }
+  }, [currentVideoIndex, onVideoEnd]);
+
   const handleVideoError = () => {
-    // Skip to next video immediately if one fails
+    console.warn('Video error, skipping to next');
     onVideoEnd();
+  };
+
+  const handleLoadedData = () => {
+    if (videoRef.current) {
+      videoRef.current.play().catch(() => {
+        console.warn('Play failed after load, trying next');
+        onVideoEnd();
+      });
+    }
   };
 
   return (
@@ -20,6 +42,7 @@ const VideoBackground = ({ videos, currentVideoIndex, onVideoEnd }) => {
         playsInline
         onEnded={onVideoEnd}
         onError={handleVideoError}
+        onLoadedData={handleLoadedData}
         preload="auto"
       >
         <source src={videos[currentVideoIndex]} type="video/mp4" />
@@ -28,5 +51,7 @@ const VideoBackground = ({ videos, currentVideoIndex, onVideoEnd }) => {
     </div>
   );
 };
+
+export default VideoBackground;
 
 export default VideoBackground;
