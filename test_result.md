@@ -332,11 +332,12 @@ metadata:
 
 test_plan:
   current_focus:
-    - "PWA Silent Installation Fix"
-    - "Social Media Meta Tags"
-    - "Complete Landing Page Functionality" 
+    - "Video Background Loading Fix"
+    - "Inline Video Persistence Fix"
+    - "Gallery Image Loading"
   stuck_tasks: 
-    - "PWA Silent Installation Fix"
+    - "Video Background Loading Fix"
+    - "Inline Video Persistence Fix"
   test_all: false
   test_priority: "stuck_first"
 
