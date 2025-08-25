@@ -1,4 +1,4 @@
-const CACHE_NAME = 'futanari-app-v16';
+const CACHE_NAME = 'futanari-app-v17';
 const urlsToCache = [
   '/',
   '/download-app',
@@ -7,53 +7,65 @@ const urlsToCache = [
   '/manifest.json'
 ];
 
-// Install - cache essential resources
+// Install - cache essential resources and force update
 self.addEventListener('install', function(event) {
-  console.log('Service Worker: Installing...');
+  console.log('Service Worker: Installing v17...');
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(function(cache) {
-        console.log('Service Worker: Caching files');
-        return cache.addAll(urlsToCache);
+        console.log('Service Worker: Caching files with force update');
+        return cache.addAll(urlsToCache.map(url => url + '?v=17'));
       })
       .then(function() {
-        console.log('Service Worker: Install complete');
+        console.log('Service Worker: Install complete - forcing immediate activation');
         return self.skipWaiting();
       })
   );
 });
 
-// Activate - clean old caches and take control
+// Activate - clean ALL old caches immediately
 self.addEventListener('activate', function(event) {
-  console.log('Service Worker: Activating...');
+  console.log('Service Worker: Activating v17...');
   event.waitUntil(
     Promise.all([
+      // Delete ALL existing caches
       caches.keys().then(function(cacheNames) {
         return Promise.all(
           cacheNames.map(function(cacheName) {
-            if (cacheName !== CACHE_NAME) {
-              console.log('Service Worker: Deleting old cache:', cacheName);
-              return caches.delete(cacheName);
-            }
+            console.log('Service Worker: Deleting cache:', cacheName);
+            return caches.delete(cacheName);
           })
         );
       }),
+      // Recreate cache with new content
+      caches.open(CACHE_NAME).then(function(cache) {
+        return cache.addAll(urlsToCache.map(url => url + '?v=17'));
+      }),
+      // Take control immediately
       self.clients.claim()
     ]).then(function() {
-      console.log('Service Worker: Ready for PWA installation');
+      console.log('Service Worker: All caches cleared, new content loaded');
+      
+      // Force reload all clients
+      self.clients.matchAll().then(clients => {
+        clients.forEach(client => {
+          console.log('Service Worker: Reloading client');
+          client.navigate(client.url);
+        });
+      });
     })
   );
 });
 
-// Fetch - serve cached content
+// Fetch - always fetch fresh content, no caching
 self.addEventListener('fetch', function(event) {
   event.respondWith(
-    caches.match(event.request)
+    fetch(event.request.url + '?v=17&t=' + Date.now())
       .then(function(response) {
-        return response || fetch(event.request);
+        return response;
       })
       .catch(function() {
-        return caches.match('/');
+        return caches.match(event.request);
       })
   );
 });
