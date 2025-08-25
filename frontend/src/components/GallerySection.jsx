@@ -2,10 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from './ui/button';
 
-import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { Button } from './ui/button';
-
 const LazyImage = ({ src, alt, className, index }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   
@@ -36,25 +32,6 @@ const LazyImage = ({ src, alt, className, index }) => {
 const GallerySection = ({ images }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
-  const [preloadedImages, setPreloadedImages] = useState(new Set([0]));
-
-  // Preload adjacent images
-  useEffect(() => {
-    const preloadAdjacent = () => {
-      const prevIndex = (currentIndex - 1 + images.length) % images.length;
-      const nextIndex = (currentIndex + 1) % images.length;
-      
-      [prevIndex, nextIndex].forEach(index => {
-        if (!preloadedImages.has(index)) {
-          const img = new Image();
-          img.src = images[index];
-          setPreloadedImages(prev => new Set([...prev, index]));
-        }
-      });
-    };
-
-    preloadAdjacent();
-  }, [currentIndex, images, preloadedImages]);
 
   useEffect(() => {
     if (!isAutoPlaying) return;
