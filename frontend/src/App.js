@@ -35,65 +35,10 @@ const galleryImages = [
 
 const Home = () => {
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
-  const [isAppLoading, setIsAppLoading] = useState(true);
-  const [assetsPreloaded, setAssetsPreloaded] = useState(false);
-
-  // Preload critical assets
-  useEffect(() => {
-    let isMounted = true;
-    
-    const preloadCriticalAssets = async () => {
-      try {
-        // Preload first video metadata
-        const firstVideo = document.createElement('video');
-        firstVideo.preload = 'metadata';
-        firstVideo.src = backgroundVideos[0];
-        
-        // Preload first gallery image
-        const firstImage = new Image();
-        firstImage.src = galleryImages[0];
-
-        // Wait for both to load
-        await Promise.all([
-          new Promise((resolve) => {
-            firstVideo.onloadedmetadata = resolve;
-            firstVideo.onerror = resolve; // Continue even if video fails
-          }),
-          new Promise((resolve) => {
-            firstImage.onload = resolve;
-            firstImage.onerror = resolve; // Continue even if image fails
-          })
-        ]);
-
-        if (isMounted) {
-          setAssetsPreloaded(true);
-          // Add minimum loading time for better UX
-          setTimeout(() => {
-            if (isMounted) setIsAppLoading(false);
-          }, 800);
-        }
-      } catch (error) {
-        console.warn('Asset preloading failed:', error);
-        if (isMounted) {
-          setIsAppLoading(false);
-        }
-      }
-    };
-
-    preloadCriticalAssets();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
 
   const handleVideoEnd = () => {
     setCurrentVideoIndex((prevIndex) => (prevIndex + 1) % backgroundVideos.length);
   };
-
-  if (isAppLoading) {
-    return <LoadingSpinner message="Loading Futanari Experience..." />;
-  }
 
   return (
     <div className="relative">
