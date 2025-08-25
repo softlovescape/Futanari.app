@@ -106,5 +106,3 @@ const VideoBackground = ({ videos, currentVideoIndex, onVideoEnd }) => {
 };
 
 export default VideoBackground;
-
-export default VideoBackground;
