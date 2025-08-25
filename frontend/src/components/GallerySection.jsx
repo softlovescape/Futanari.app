@@ -2,38 +2,32 @@ import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from './ui/button';
 
+import React, { useState, useEffect } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { Button } from './ui/button';
+
 const LazyImage = ({ src, alt, className, index }) => {
   const [isLoaded, setIsLoaded] = useState(false);
-  const [isInView, setIsInView] = useState(index === 0); // Load first image immediately
   
-  useEffect(() => {
-    // Preload images that are close to current view
-    if (index <= 2) {
-      setIsInView(true);
-    }
-  }, [index]);
-
   const handleLoad = () => {
     setIsLoaded(true);
   };
 
   return (
     <div className={`relative ${className}`}>
+      <img
+        src={src}
+        alt={alt}
+        className={`${className} transition-opacity duration-300 ${
+          isLoaded ? 'opacity-100' : 'opacity-50'
+        }`}
+        onLoad={handleLoad}
+        loading={index === 0 ? "eager" : "lazy"} // Load first image immediately
+      />
       {!isLoaded && (
-        <div className="absolute inset-0 bg-gray-800 flex items-center justify-center">
-          <div className="text-white text-sm">Loading...</div>
+        <div className="absolute inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
+          <div className="text-white text-sm opacity-75">Loading...</div>
         </div>
-      )}
-      {isInView && (
-        <img
-          src={src}
-          alt={alt}
-          className={`${className} transition-opacity duration-300 ${
-            isLoaded ? 'opacity-100' : 'opacity-0'
-          }`}
-          onLoad={handleLoad}
-          loading="lazy"
-        />
       )}
     </div>
   );
