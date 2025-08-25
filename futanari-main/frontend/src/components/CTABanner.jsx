@@ -35,7 +35,7 @@ const CTABanner = () => {
             asChild
             className="bg-[#e6004c] hover:bg-[#c50042] text-white text-lg px-8 py-4 rounded-lg font-semibold transition-all duration-300 hover:scale-105"
           >
-            <a href="https://lovescape.com/subscription/pro" target="_blank" rel="noopener noreferrer">
+            <a href="https://go.xlvirdr.com/ls?campaignId=futanari&sourceId=facebook&creativeId=subscript&user=cc5b3c935e450b26c79fcee62bbb04f745f9c75b31dedf9902&path=/subscription/pro" target="_blank" rel="noopener noreferrer">
               Subscribe Pro →
             </a>
           </Button>
