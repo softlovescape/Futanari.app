@@ -9,6 +9,7 @@ import InfoSection from "./components/InfoSection";
 import FeatureGrid from "./components/FeatureGrid";
 import BlockTextSection from "./components/BlockTextSection";
 import DownloadApp from "./components/DownloadApp";
+import LoadingSpinner from "./components/LoadingSpinner";
 
 // Video assets - using half of the provided videos
 const backgroundVideos = [
