@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 
 const VideoBackground = ({ videos, currentVideoIndex, onVideoEnd }) => {
-  const [isVideoLoaded, setIsVideoLoaded] = useState(false);
   const [preloadedVideos, setPreloadedVideos] = useState(new Set());
   const videoRef = useRef(null);
 
@@ -17,10 +16,6 @@ const VideoBackground = ({ videos, currentVideoIndex, onVideoEnd }) => {
     }
   }, [currentVideoIndex, videos, preloadedVideos]);
 
-  const handleVideoLoad = () => {
-    setIsVideoLoaded(true);
-  };
-
   const handleVideoError = () => {
     console.warn('Video failed to load, skipping to next');
     onVideoEnd();
@@ -28,27 +23,17 @@ const VideoBackground = ({ videos, currentVideoIndex, onVideoEnd }) => {
 
   return (
     <div className="fixed inset-0 w-full h-full overflow-hidden z-0">
-      {/* Loading placeholder */}
-      {!isVideoLoaded && (
-        <div className="absolute inset-0 bg-black flex items-center justify-center">
-          <div className="text-white text-lg">Loading...</div>
-        </div>
-      )}
-      
       <video
         ref={videoRef}
         key={currentVideoIndex}
-        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${
-          isVideoLoaded ? 'opacity-100' : 'opacity-0'
-        }`}
+        className="absolute inset-0 w-full h-full object-cover"
         autoPlay
         muted
         loop={false}
         playsInline
         onEnded={onVideoEnd}
-        onLoadedData={handleVideoLoad}
         onError={handleVideoError}
-        preload="none"
+        preload="metadata"
       >
         <source src={videos[currentVideoIndex]} type="video/mp4" />
       </video>
