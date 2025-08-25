@@ -11,11 +11,13 @@ import BlockTextSection from "./components/BlockTextSection";
 import DownloadApp from "./components/DownloadApp";
 import LazyVideo from "./components/LazyVideo";
 
-// Video assets - using fewer videos to prevent browser throttling
+// Video assets - all provided videos restored
 const backgroundVideos = [
   "https://customer-assets.emergentagent.com/job_86210f7e-097f-4a1d-b538-652380944388/artifacts/p6ftusbw_2.mp4",
   "https://customer-assets.emergentagent.com/job_86210f7e-097f-4a1d-b538-652380944388/artifacts/7487bmdb_3.mp4",
-  "https://customer-assets.emergentagent.com/job_86210f7e-097f-4a1d-b538-652380944388/artifacts/f0rh1ahv_5.mp4"
+  "https://customer-assets.emergentagent.com/job_86210f7e-097f-4a1d-b538-652380944388/artifacts/lzwj0eko_4.mp4",
+  "https://customer-assets.emergentagent.com/job_86210f7e-097f-4a1d-b538-652380944388/artifacts/f0rh1ahv_5.mp4",
+  "https://customer-assets.emergentagent.com/job_86210f7e-097f-4a1d-b538-652380944388/artifacts/7tubjcui_6.mp4"
 ];
 
 // Image assets for gallery - reduce initial load by taking only first 4
