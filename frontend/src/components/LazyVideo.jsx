@@ -79,5 +79,3 @@ const LazyVideo = ({ src, className, ...props }) => {
 };
 
 export default LazyVideo;
-
-export default LazyVideo;
