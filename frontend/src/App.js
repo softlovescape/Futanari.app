@@ -20,7 +20,7 @@ const backgroundVideos = [
   "https://customer-assets.emergentagent.com/job_86210f7e-097f-4a1d-b538-652380944388/artifacts/7tubjcui_6.mp4"
 ];
 
-// Image assets for gallery
+// Image assets for gallery - reduce initial load by taking only first 4
 const galleryImages = [
   "https://customer-assets.emergentagent.com/job_86210f7e-097f-4a1d-b538-652380944388/artifacts/vfys931a_image%20-%202025-07-16T123653.921.png",
   "https://customer-assets.emergentagent.com/job_86210f7e-097f-4a1d-b538-652380944388/artifacts/sn8rhnxm_image%20-%202025-07-16T151724.850.png",
