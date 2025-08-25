@@ -288,6 +288,42 @@ frontend:
         agent: "main"
         comment: "COMPLETE SOLUTION: Eliminated all redirect loops and delays by implementing a clean approach. Instead of complex redirect logic, created dedicated redirect page (/app-redirect.html) that immediately opens https://futanari.app/ when PWA is launched. Key improvements: (1) Removed ALL complex redirect logic from React components, (2) Created simple HTML redirect page with loading animation, (3) Multiple redirect methods for maximum compatibility (replace, href, window.open, manual link), (4) Updated manifest.json start_url to point to redirect page, (5) Eliminated all sessionStorage/localStorage complexity. Result: PWA installs correctly, and when opened from home screen, it shows brief loading screen and immediately opens https://futanari.app/ with zero loops, delays, or flashing. Browser users continue to see normal download page. Testing confirms redirect page successfully redirects to external site."
 
+  - task: "Video Background Loading Fix"
+    implemented: true
+    working: false
+    file: "/app/frontend/src/components/VideoBackground.jsx"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "CRITICAL ISSUE: All background videos failing to load with 'net::ERR_ABORTED' errors. Videos p6ftusbw_2.mp4, 7487bmdb_3.mp4, lzwj0eko_4.mp4, f0rh1ahv_5.mp4, 7tubjcui_6.mp4 from customer-assets.emergentagent.com are inaccessible. This causes the reported issue where background shows black/gradient fill instead of video content. The VideoBackground component is correctly implemented but asset server is failing. Infrastructure issue requiring immediate attention."
+
+  - task: "Inline Video Persistence Fix"
+    implemented: true
+    working: false
+    file: "/app/frontend/src/components/LazyVideo.jsx"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "CRITICAL ISSUE: Inline video v6lxf1u9_Futanari%207-realistic.mp4 failing to load with 'net::ERR_ABORTED' error from customer-assets.emergentagent.com. This causes the reported issue where video appears briefly then disappears after 1 second. The LazyVideo component is correctly implemented with proper autoplay, muted, loop, and playsInline attributes, but the video asset is inaccessible. Infrastructure issue requiring immediate attention."
+
+  - task: "Gallery Image Loading"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/components/GallerySection.jsx"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "Gallery images loading successfully without delays. Found 9 image elements with proper lazy loading implementation (first image eager, rest lazy). Images from customer-assets.emergentagent.com are accessible and displaying correctly. Gallery carousel functionality working with navigation arrows and dots. No loading delays observed - images appear immediately when scrolled into view."
+
 metadata:
   created_by: "main_agent"
   version: "1.0"
